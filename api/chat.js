@@ -36,11 +36,11 @@ export default async function handler(req, res) {
   try {
     const { 
       messages, 
-      temperature = 0.1,  // Lower default for more deterministic output
+      temperature = 0.1,
       top_p = 0.9, 
       top_k = 40, 
       max_tokens = 16384, 
-      stream = false, 
+      stream = true, // Force streaming for a better UX
       model = "deepseek" 
     } = req.body;
 
@@ -62,30 +62,29 @@ export default async function handler(req, res) {
     }
 
     if (model === "qwen") {
-      // Qwen3 30B-A3B for validation and critique
-      // Updated to use the correct Qwen model identifier
+      // Correctly use Qwen3 30B-A3B for validation and critique
       apiConfig = {
         url: 'https://api.fireworks.ai/inference/v1/chat/completions',
         headers: {
           'Authorization': `Bearer ${fireworksKey}`,
           'Content-Type': 'application/json'
         },
-        model: "accounts/fireworks/models/qwen2p5-72b-instruct" // Qwen 2.5 72B is the closest available
+        model: "accounts/fireworks/models/qwen3-30b-a3b"
       };
     } else {
-      // Default to DeepSeek V3-0324 for analysis and code generation
+      // Default to DeepSeek for analysis and code generation
       apiConfig = {
         url: 'https://api.fireworks.ai/inference/v1/chat/completions',
         headers: {
           'Authorization': `Bearer ${fireworksKey}`,
           'Content-Type': 'application/json'
         },
-        model: "accounts/fireworks/models/deepseek-v3-0324"
+        model: "accounts/fireworks/models/deepseek-coder-33b-instruct" // Using the powerful 33B Coder model
       };
     }
 
     // Log the model being used
-    console.log(`Using model: ${apiConfig.model} for ${model} request`);
+    console.log(`Using model: ${apiConfig.model} for ${model} request (Stream: ${stream})`);
 
     // Call the Fireworks API
     const response = await fetch(apiConfig.url, {
@@ -108,7 +107,6 @@ export default async function handler(req, res) {
       const errorText = await response.text();
       console.error(`API Error (${response.status}):`, errorText);
       
-      // Try to parse error for more details
       let errorMessage = `Fireworks API error (${response.status})`;
       try {
         const errorData = JSON.parse(errorText);
@@ -141,12 +139,9 @@ export default async function handler(req, res) {
 
       res.end();
     } else {
-      // Return regular JSON response
+      // This part will likely not be used if stream is forced true, but is kept for completeness
       const data = await response.json();
-      
-      // Log successful response
-      console.log(`Successfully processed ${model} request`);
-      
+      console.log(`Successfully processed ${model} request (non-stream)`);
       return res.status(200).json(data);
     }
 
