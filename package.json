@@ -1,7 +1,7 @@
 {
-  "name": "enhanced-coding-cod-studio",
-  "version": "1.0.0",
-  "description": "AI-powered coding assistant with DeepSeek V3-0324",
+  "name": "rci-engine-dual-model",
+  "version": "2.0.0",
+  "description": "RCI Engine - DeepSeek V3 & Qwen3 Dual Model Intelligence System",
   "private": true,
   "type": "module",
   "scripts": {
@@ -11,24 +11,28 @@
     "deploy": "vercel deploy --prod"
   },
   "dependencies": {
-    "dotenv": "^16.3.1"
+    "dotenv": "^16.5.0"
   },
   "devDependencies": {
-    "vercel": "^32.3.0"
+    "vercel": "^32.7.2"
   },
   "engines": {
     "node": ">=18.0.0"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/yourusername/enhanced-coding-cod-studio.git"
+    "url": "git+https://github.com/yourusername/rci-engine-dual-model.git"
   },
   "keywords": [
     "ai",
-    "coding",
+    "rci",
+    "reflexive-code-intelligence",
     "deepseek",
-    "assistant",
-    "vercel"
+    "qwen",
+    "dual-model",
+    "fireworks-ai",
+    "coding-assistant",
+    "chain-of-draft"
   ],
   "author": "",
   "license": "MIT"
