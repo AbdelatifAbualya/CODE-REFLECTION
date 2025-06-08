@@ -34,7 +34,15 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { messages, temperature = 0.2, top_p = 0.9, top_k = 40, max_tokens = 16384, stream = false, model = "deepseek" } = req.body;
+    const { 
+      messages, 
+      temperature = 0.1,  // Lower default for more deterministic output
+      top_p = 0.9, 
+      top_k = 40, 
+      max_tokens = 16384, 
+      stream = false, 
+      model = "deepseek" 
+    } = req.body;
 
     // Validate required parameters
     if (!messages || !Array.isArray(messages)) {
@@ -54,14 +62,15 @@ export default async function handler(req, res) {
     }
 
     if (model === "qwen") {
-      // Qwen3-30B-A3B for validation and critique
+      // Qwen3 30B-A3B for validation and critique
+      // Updated to use the correct Qwen model identifier
       apiConfig = {
         url: 'https://api.fireworks.ai/inference/v1/chat/completions',
         headers: {
           'Authorization': `Bearer ${fireworksKey}`,
           'Content-Type': 'application/json'
         },
-        model: "accounts/fireworks/models/qwen3-30b-a3b"
+        model: "accounts/fireworks/models/qwen2p5-72b-instruct" // Qwen 2.5 72B is the closest available
       };
     } else {
       // Default to DeepSeek V3-0324 for analysis and code generation
@@ -74,6 +83,9 @@ export default async function handler(req, res) {
         model: "accounts/fireworks/models/deepseek-v3-0324"
       };
     }
+
+    // Log the model being used
+    console.log(`Using model: ${apiConfig.model} for ${model} request`);
 
     // Call the Fireworks API
     const response = await fetch(apiConfig.url, {
@@ -95,7 +107,19 @@ export default async function handler(req, res) {
     if (!response.ok) {
       const errorText = await response.text();
       console.error(`API Error (${response.status}):`, errorText);
-      throw new Error(`Fireworks API error (${response.status}): ${errorText}`);
+      
+      // Try to parse error for more details
+      let errorMessage = `Fireworks API error (${response.status})`;
+      try {
+        const errorData = JSON.parse(errorText);
+        if (errorData.error && errorData.error.message) {
+          errorMessage = errorData.error.message;
+        }
+      } catch (e) {
+        errorMessage = errorText || errorMessage;
+      }
+      
+      throw new Error(errorMessage);
     }
 
     // Handle streaming responses
@@ -119,6 +143,10 @@ export default async function handler(req, res) {
     } else {
       // Return regular JSON response
       const data = await response.json();
+      
+      // Log successful response
+      console.log(`Successfully processed ${model} request`);
+      
       return res.status(200).json(data);
     }
 
@@ -126,7 +154,8 @@ export default async function handler(req, res) {
     console.error('Chat API Error:', error);
     return res.status(500).json({ 
       error: 'Internal server error',
-      message: error.message 
+      message: error.message,
+      model: req.body.model || 'unknown'
     });
   }
 }
