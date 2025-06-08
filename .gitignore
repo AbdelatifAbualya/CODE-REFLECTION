@@ -40,3 +40,8 @@ coverage/
 # Temporary folders
 tmp/
 temp/
+
+# RCI Engine specific
+*.rci.log
+*.analysis.txt
+rci-exports/
