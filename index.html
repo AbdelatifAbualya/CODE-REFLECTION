@@ -1,0 +1,2033 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reflexive Code Intelligence - DeepSeek V3 Self-Reflection Engine</title>
+  
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Marked.js for Markdown parsing -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  
+  <!-- Highlight.js for code highlighting -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/github-dark.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+  
+  <!-- Configuration for Tailwind -->
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            primary: {
+              50: '#eef2ff',
+              100: '#e0e7ff',
+              200: '#c7d2fe',
+              300: '#a5b4fc',
+              400: '#818cf8',
+              500: '#5686f5',
+              600: '#4f46e5',
+              700: '#4338ca',
+              800: '#3730a3',
+              900: '#312e81',
+              950: '#1e1b4b',
+            },
+            dark: {
+              100: '#d1d5db',
+              200: '#9ca3af',
+              300: '#6b7280',
+              400: '#4b5563',
+              500: '#374151',
+              600: '#1f2937',
+              700: '#111827',
+              800: '#0d1117',
+              900: '#030712',
+            },
+            deepseek: {
+              100: '#f0f9ff',
+              200: '#e0f2fe',
+              300: '#7dd3fc',
+              400: '#38bdf8',
+              500: '#0ea5e9',
+              600: '#0284c7',
+              700: '#0369a1',
+              800: '#075985',
+              900: '#0c4a6e',
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'ui-monospace', 'monospace'],
+          },
+        }
+      }
+    };
+  </script>
+
+  <style>
+    /* Base Styles */
+    :root {
+      --primary: #5686f5;
+      --primary-hover: #4169e1;
+      --deepseek: #0ea5e9;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --error: #ef4444;
+      --code-green: #50fa7b;
+      --code-orange: #ffb86c;
+      --code-purple: #bd93f9;
+    }
+    
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    
+    ::-webkit-scrollbar-track {
+      background: rgb(20, 24, 33);
+      border-radius: 8px;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+      background: rgba(14, 165, 233, 0.6);
+      border-radius: 8px;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(14, 165, 233, 0.8);
+    }
+
+    /* Enhanced CoD Steps Animation */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    @keyframes slideInLeft {
+      from { opacity: 0; transform: translateX(-20px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    
+    @keyframes slideInRight {
+      from { opacity: 0; transform: translateX(20px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    
+    @keyframes codeHighlight {
+      0% { background: rgba(80, 250, 123, 0); }
+      50% { background: rgba(80, 250, 123, 0.1); }
+      100% { background: rgba(80, 250, 123, 0); }
+    }
+    
+    .analysis-block {
+      animation: fadeIn 0.4s ease;
+    }
+    
+    .critical-part {
+      animation: slideInLeft 0.3s ease;
+    }
+    
+    .cod-step {
+      animation: slideInLeft 0.3s ease;
+    }
+    
+    .reflection-block {
+      animation: slideInRight 0.5s ease;
+    }
+    
+    .code-block {
+      animation: fadeIn 0.6s ease;
+    }
+    
+    .code-highlight {
+      animation: codeHighlight 2s ease;
+    }
+    
+    /* Stage indicator with enhanced animation */
+    @keyframes pulse {
+      0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(14, 165, 233, 0.7); }
+      70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(14, 165, 233, 0); }
+      100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(14, 165, 233, 0); }
+    }
+    
+    .stage-indicator {
+      animation: pulse 2s infinite;
+    }
+    
+    /* Code-specific styling */
+    .code-analysis {
+      background: linear-gradient(135deg, rgba(80, 250, 123, 0.1) 0%, rgba(189, 147, 249, 0.1) 100%);
+      border-left: 3px solid var(--code-green);
+    }
+    
+    .error-prevention {
+      background: linear-gradient(135deg, rgba(255, 184, 108, 0.1) 0%, rgba(239, 68, 68, 0.1) 100%);
+      border-left: 3px solid var(--code-orange);
+    }
+    
+    .best-practice {
+      background: linear-gradient(135deg, rgba(189, 147, 249, 0.1) 0%, rgba(86, 134, 245, 0.1) 100%);
+      border-left: 3px solid var(--code-purple);
+    }
+    
+    /* Progress Bar with DeepSeek colors */
+    .progress-bar {
+      background: linear-gradient(90deg, #0ea5e9 0%, #0284c7 100%);
+      transition: width 0.3s ease;
+    }
+
+    /* Enhanced Range Slider Styling */
+    input[type="range"] {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 4px;
+      background: #1f2937;
+      border-radius: 4px;
+      outline: none;
+      background: linear-gradient(to right, var(--deepseek) var(--value-percent, 50%), #1f2937 var(--value-percent, 50%)) !important;
+    }
+    
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 16px;
+      height: 16px;
+      background: white !important;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 1px solid rgba(0, 0, 0, 0.1) !important;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+      margin-top: -6px;
+    }
+
+    /* DeepSeek branding elements */
+    .deepseek-gradient {
+      background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 50%, #075985 100%);
+    }
+
+    .deepseek-glow {
+      box-shadow: 0 0 20px rgba(14, 165, 233, 0.3);
+    }
+
+    /* Code syntax highlighting enhancements */
+    .hljs {
+      background: #0d1117 !important;
+      padding: 1.5rem !important;
+      border-radius: 0.5rem !important;
+    }
+    
+    .hljs-keyword { color: #ff79c6 !important; }
+    .hljs-string { color: #f1fa8c !important; }
+    .hljs-number { color: #bd93f9 !important; }
+    .hljs-function { color: #50fa7b !important; }
+    .hljs-comment { color: #6272a4 !important; }
+    .hljs-class { color: #8be9fd !important; }
+  </style>
+</head>
+<body class="bg-dark-800 text-gray-100 font-sans min-h-screen overflow-hidden">
+  <div class="flex h-screen">
+    <!-- Sidebar -->
+    <div class="w-80 bg-gradient-to-b from-dark-700 to-dark-800 border-r border-dark-600 flex flex-col overflow-y-auto hidden md:flex shadow-2xl">
+      <!-- Header -->
+      <div class="p-6 border-b border-dark-600/50">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-10 h-10 deepseek-gradient rounded-lg flex items-center justify-center deepseek-glow">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
+            </svg>
+          </div>
+          <div>
+            <h2 class="text-lg font-bold text-white">Reflexive Code Intelligence</h2>
+            <p class="text-xs text-deepseek-300">DeepSeek V3 Self-Reflection Engine</p>
+          </div>
+        </div>
+        
+        <!-- New Session Button -->
+        <button id="newThreadBtn" class="w-full deepseek-gradient hover:from-deepseek-600 hover:to-deepseek-700 text-white py-3 px-4 rounded-xl transition-all duration-200 flex items-center justify-center gap-3 shadow-lg hover:shadow-xl transform hover:scale-105 deepseek-glow">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+          </svg>
+          <span class="font-medium">New Coding Session</span>
+        </button>
+      </div>
+
+      <!-- System Status -->
+      <div class="p-4 border-b border-dark-600/50">
+        <!-- DeepSeek Status -->
+        <!-- Dual Model Status -->
+        <div class="space-y-3 mb-4">
+          <!-- Primary Model: DeepSeek -->
+          <div class="bg-gradient-to-r from-deepseek-900/20 to-blue-900/20 border border-deepseek-500/30 rounded-lg p-3">
+            <div class="flex items-center justify-between mb-2">
+              <div class="flex items-center gap-2">
+                <div class="w-2 h-2 bg-deepseek-400 rounded-full animate-pulse"></div>
+                <span class="text-deepseek-300 text-sm font-medium">DeepSeek V3-0324</span>
+                <span class="bg-blue-500/20 text-blue-300 text-xs px-2 py-1 rounded-full">Primary</span>
+              </div>
+              <span id="deepseekStatus" class="text-deepseek-400 text-xs bg-deepseek-900/30 px-2 py-1 rounded-full">Analysis & Code</span>
+            </div>
+            <div class="text-deepseek-200 text-xs">Deep analysis & professional code generation</div>
+          </div>
+          
+          <!-- Secondary Model: Qwen -->
+          <div id="qwenModelStatus" class="bg-gradient-to-r from-purple-900/20 to-pink-900/20 border border-purple-500/30 rounded-lg p-3">
+            <div class="flex items-center justify-between mb-2">
+              <div class="flex items-center gap-2">
+                <div class="w-2 h-2 bg-purple-400 rounded-full animate-pulse"></div>
+                <span class="text-purple-300 text-sm font-medium">Qwen 2.5-72B</span>
+                <span class="bg-purple-500/20 text-purple-300 text-xs px-2 py-1 rounded-full">Secondary</span>
+              </div>
+              <span id="qwenStatus" class="text-purple-400 text-xs bg-purple-900/30 px-2 py-1 rounded-full">Validation & Critique</span>
+            </div>
+            <div class="text-purple-200 text-xs">Strategy validation & cross-model consensus</div>
+          </div>
+        </div>
+        
+        <!-- RCI Status -->
+        <div class="bg-gradient-to-r from-green-900/20 to-emerald-900/20 border border-green-500/30 rounded-lg p-3">
+          <div class="flex items-center justify-between mb-2">
+            <div class="flex items-center gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+              <span class="text-green-300 text-sm font-medium">RCI Active</span>
+            </div>
+            <span id="rciStatus" class="text-green-400 text-xs bg-green-900/30 px-2 py-1 rounded-full">4 stages</span>
+          </div>
+          <div class="text-green-200 text-xs">Analysis → Error Prevention → Code Gen → Self-Reflection</div>
+        </div>
+      </div>
+
+      <!-- Threads Section -->
+      <div class="flex-1 p-4">
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="text-sm font-medium text-gray-300 uppercase tracking-wider">Recent Sessions</h3>
+          <span id="threadCount" class="text-xs bg-dark-600 text-gray-400 px-2 py-1 rounded-full">1</span>
+        </div>
+        <ul id="threadList" class="space-y-2 mb-6">
+          <li class="bg-dark-600/50 hover:bg-dark-600 text-deepseek-300 px-4 py-3 rounded-xl cursor-pointer transition-all duration-200 border border-dark-500/50 hover:border-deepseek-500/50">
+            <div class="flex items-center gap-3">
+              <div class="w-8 h-8 bg-deepseek-500/20 rounded-lg flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-deepseek-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
+                </svg>
+              </div>
+              <div class="flex-1 min-w-0">
+                <p class="text-sm font-medium text-white truncate">Coding Session 1</p>
+                <p class="text-xs text-gray-400">Just now</p>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Export & Actions Section -->
+      <div class="p-4 border-t border-dark-600/50 space-y-3">
+        <div class="text-xs font-medium text-gray-400 uppercase tracking-wider mb-3 flex items-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2z"></path>
+          </svg>
+          Export Code
+        </div>
+        
+        <!-- Export Buttons -->
+        <div class="grid grid-cols-2 gap-2 mb-4">
+          <button id="downloadCodeBtn" class="bg-dark-600 hover:bg-dark-500 text-gray-300 hover:text-white py-3 px-3 rounded-lg transition-all duration-200 flex flex-col items-center gap-1 border border-dark-500 hover:border-gray-500">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
+            </svg>
+            <span class="text-xs font-medium">Code Only</span>
+          </button>
+          <button id="downloadFullBtn" class="bg-dark-600 hover:bg-dark-500 text-gray-300 hover:text-white py-3 px-3 rounded-lg transition-all duration-200 flex flex-col items-center gap-1 border border-dark-500 hover:border-gray-500">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+            </svg>
+            <span class="text-xs font-medium">Full Analysis</span>
+          </button>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="text-xs font-medium text-gray-400 uppercase tracking-wider mb-2 flex items-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+          </svg>
+          Quick Actions
+        </div>
+        
+        <div class="space-y-2">
+          <button id="clearThreadBtn" class="w-full bg-dark-600 hover:bg-dark-500 text-gray-300 hover:text-white py-2.5 px-4 rounded-lg transition-all duration-200 flex items-center gap-3 border border-dark-500 hover:border-gray-500">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+            </svg>
+            <span class="text-sm">Clear Session</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mobile Sidebar Toggle -->
+    <div id="mobileSidebarToggle" class="fixed left-4 top-4 bg-dark-700 p-2 rounded-md shadow-lg z-20 md:hidden">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+      </svg>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="flex-1 flex flex-col overflow-hidden">
+      <!-- Header -->
+      <header class="bg-dark-700 border-b border-dark-600 h-16 flex items-center justify-between px-4 md:px-6">
+        <h1 id="pageTitle" class="text-xl font-semibold">Reflexive Code Intelligence - DeepSeek V3 Self-Reflection Engine</h1>
+        <div class="flex items-center gap-3">
+          <div id="currentModelDisplay" class="bg-dark-600 text-sm px-3 py-1.5 rounded-lg flex items-center gap-2">
+            <div class="w-2 h-2 bg-gradient-to-r from-deepseek-400 to-purple-400 rounded-full animate-pulse"></div>
+            <span id="modelDisplayText">Dual Model RCI</span>
+            <span class="bg-green-500/20 text-green-300 text-xs px-2 py-1 rounded-full">DeepSeek + Qwen</span>
+          </div>
+          <button id="openSettings" class="flex items-center gap-1.5 bg-dark-600 hover:bg-dark-500 text-gray-300 px-3 py-1.5 rounded-lg transition">
+            <span>Settings</span>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+            </svg>
+          </button>
+        </div>
+      </header>
+
+      <!-- Progress Bar -->
+      <div id="progressContainer" class="bg-dark-600 h-2 overflow-hidden hidden">
+        <div id="progressBar" class="progress-bar h-full w-0"></div>
+      </div>
+
+      <!-- Chat Messages Area -->
+      <div id="chatMessages" class="flex-1 overflow-y-auto p-4 space-y-6"></div>
+
+      <!-- Input Area -->
+      <div class="p-4 border-t border-dark-600 bg-dark-700">
+        <div class="flex items-start gap-3 rounded-xl bg-dark-600 p-3 shadow-lg border border-dark-500 focus-within:border-deepseek-500 transition">
+          <div class="flex-1">
+            <textarea id="userInput" rows="1" class="w-full bg-dark-700 text-gray-100 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-deepseek-500 resize-none text-base font-mono" placeholder="Describe your coding challenge - I'll analyze, prevent errors, and create superior code..."></textarea>
+          </div>
+          <div class="flex flex-col gap-2 mt-1">
+            <button id="sendBtn" class="deepseek-gradient hover:from-deepseek-600 hover:to-deepseek-700 text-white p-3 rounded-lg transition deepseek-glow">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Status Notification -->
+  <div id="statusNotification" class="fixed bottom-4 right-4 bg-dark-600 text-white py-2 px-4 rounded-lg shadow-lg opacity-0 transition-opacity duration-300 z-50"></div>
+
+  <!-- Settings Modal -->
+  <div id="settingsModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 hidden">
+    <div class="bg-dark-700 rounded-xl shadow-2xl max-w-5xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+      <div class="p-5 border-b border-dark-600 flex justify-between items-center">
+        <h2 class="text-xl font-semibold">Reflexive Code Intelligence Configuration - DeepSeek V3-0324</h2>
+        <button id="closeModalX" class="text-gray-400 hover:text-white">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+      
+      <div class="p-5">
+        <!-- Tab Navigation -->
+        <div class="bg-dark-600 rounded-lg p-1 flex mb-5 overflow-x-auto">
+          <button class="tab-btn flex-shrink-0 py-2 px-4 rounded-md text-white bg-deepseek-500" data-tab="modelTab">🤖 Model</button>
+          <button class="tab-btn flex-shrink-0 py-2 px-4 rounded-md text-gray-400 transition" data-tab="codingTab">🧠 RCI Stages</button>
+          <button class="tab-btn flex-shrink-0 py-2 px-4 rounded-md text-gray-400 transition" data-tab="errorTab">🛡️ Error Prevention</button>
+          <button class="tab-btn flex-shrink-0 py-2 px-4 rounded-md text-gray-400 transition" data-tab="parametersTab">⚙️ Parameters</button>
+        </div>
+        
+        <!-- Model Selection Tab -->
+        <div id="modelTab" class="tab-content">
+          <h3 class="text-lg font-medium mb-4 pb-2 border-b border-dark-600">DeepSeek V3-0324 Configuration</h3>
+          
+          <!-- DeepSeek Model Info -->
+          <div class="mb-6">
+            <div class="bg-gradient-to-r from-deepseek-900/20 to-blue-900/20 border border-deepseek-500/30 rounded-lg p-4">
+              <div class="flex items-center text-deepseek-300 text-sm font-medium mb-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                DeepSeek V3-0324 - RCI Engine
+                <span class="bg-deepseek-600/20 text-deepseek-300 text-xs px-2 py-1 rounded-full ml-2">OPTIMIZED</span>
+              </div>
+              <div class="text-deepseek-100 text-xs space-y-1">
+                <p>• Specialized prompts for professional code generation</p>
+                <p>• Enhanced error detection and prevention mechanisms</p>
+                <p>• 4-stage Reflexive Code Intelligence self-reflection process</p>
+                <p>• Built-in best practices and design pattern awareness</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- RCI Stages Tab -->
+        <div id="codingTab" class="tab-content hidden">
+          <h3 class="text-lg font-medium mb-4 pb-2 border-b border-dark-600">Reflexive Code Intelligence - 4-Stage Self-Reflection</h3>
+          
+          <!-- RCI Workflow -->
+          <div class="bg-gradient-to-r from-purple-900/20 to-blue-900/20 border border-purple-500/30 rounded-lg p-4 mb-6">
+            <div class="flex items-center text-purple-300 text-sm font-medium mb-3">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+              </svg>
+              RCI Self-Reflection Workflow
+              <span class="bg-purple-600/20 text-purple-300 text-xs px-2 py-1 rounded-full ml-2">ADVANCED</span>
+            </div>
+            <div class="text-purple-100 text-xs space-y-2">
+              <div class="flex items-center gap-2">
+                <span class="bg-purple-800/30 px-2 py-1 rounded">1</span>
+                <span>Deep Analysis & Error Identification - Comprehensive requirement analysis with proactive error detection</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="bg-purple-800/30 px-2 py-1 rounded">2</span>
+                <span>Error Prevention Strategy Planning - Develop specific strategies to prevent each identified error</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="bg-purple-800/30 px-2 py-1 rounded">3</span>
+                <span>Professional Code Generation - Create production-ready code with built-in error preventions</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="bg-purple-800/30 px-2 py-1 rounded">4</span>
+                <span>Self-Reflection & Code Improvement - Critical evaluation and iterative enhancement</span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- RCI Benefits -->
+          <div class="bg-gradient-to-r from-cyan-900/20 to-teal-900/20 border border-cyan-500/30 rounded-lg p-4 mb-6">
+            <div class="flex items-center text-cyan-300 text-sm font-medium mb-3">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+              RCI Methodology Benefits
+            </div>
+            <div class="text-cyan-100 text-xs space-y-1">
+              <p>• Based on latest Reflexion Framework research (91% HumanEval accuracy)</p>
+              <p>• Self-refining iterative improvement methodology</p>
+              <p>• Proactive error prevention vs reactive debugging</p>
+              <p>• Enhanced contextual understanding and real-time feedback</p>
+              <p>• Superior code quality through systematic self-reflection</p>
+            </div>
+          </div>
+          
+          <!-- RCI Depth Configuration -->
+          <div class="mb-6">
+            <h4 class="text-sm font-medium text-gray-300 mb-3">Self-Reflection Depth</h4>
+            <div class="bg-dark-600 border border-dark-500 rounded-lg p-4 space-y-3">
+              <div class="flex items-start">
+                <input type="radio" id="quickAnalysis" name="analysisDepth" value="quick" class="w-4 h-4 mt-1 text-deepseek-500 bg-dark-500 border-dark-400">
+                <label for="quickAnalysis" class="ml-3 block text-sm font-medium text-white">
+                  Standard Reflection
+                  <div class="text-gray-400 text-xs mt-1">Basic 4-stage process for simple implementations</div>
+                </label>
+              </div>
+              
+              <div class="flex items-start">
+                <input type="radio" id="standardAnalysis" name="analysisDepth" value="standard" checked class="w-4 h-4 mt-1 text-deepseek-500 bg-dark-500 border-dark-400">
+                <label for="standardAnalysis" class="ml-3 block text-sm font-medium text-white">
+                  Enhanced Reflection
+                  <div class="text-gray-400 text-xs mt-1">Full RCI methodology with detailed error prevention</div>
+                </label>
+              </div>
+              
+              <div class="flex items-start">
+                <input type="radio" id="deepAnalysis" name="analysisDepth" value="deep" class="w-4 h-4 mt-1 text-deepseek-500 bg-dark-500 border-dark-400">
+                <label for="deepAnalysis" class="ml-3 block text-sm font-medium text-white">
+                  Deep Self-Reflection
+                  <div class="text-gray-400 text-xs mt-1">Maximum analysis depth for complex systems and critical applications</div>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Error Prevention Tab -->
+        <div id="errorTab" class="tab-content hidden">
+          <h3 class="text-lg font-medium mb-4 pb-2 border-b border-dark-600">Error Prevention & Best Practices</h3>
+          
+          <!-- Error Prevention Settings -->
+          <div class="mb-6">
+            <h4 class="text-sm font-medium text-gray-300 mb-4">Active Error Prevention</h4>
+            
+            <div class="space-y-3">
+              <label class="flex items-start p-3 bg-dark-600 rounded-lg border border-dark-500 cursor-pointer hover:border-orange-500/50 transition">
+                <input type="checkbox" id="enableTypeChecking" checked class="w-4 h-4 mt-1 text-orange-500 bg-dark-500 border-dark-400 rounded focus:ring-orange-500">
+                <div class="ml-3">
+                  <div class="font-medium text-white">Type Safety Analysis</div>
+                  <div class="text-gray-400 text-xs mt-1">Check for type mismatches, null/undefined handling</div>
+                </div>
+              </label>
+              
+              <label class="flex items-start p-3 bg-dark-600 rounded-lg border border-dark-500 cursor-pointer hover:border-orange-500/50 transition">
+                <input type="checkbox" id="enableEdgeCases" checked class="w-4 h-4 mt-1 text-orange-500 bg-dark-500 border-dark-400 rounded focus:ring-orange-500">
+                <div class="ml-3">
+                  <div class="font-medium text-white">Edge Case Detection</div>
+                  <div class="text-gray-400 text-xs mt-1">Identify boundary conditions and edge cases</div>
+                </div>
+              </label>
+              
+              <label class="flex items-start p-3 bg-dark-600 rounded-lg border border-dark-500 cursor-pointer hover:border-orange-500/50 transition">
+                <input type="checkbox" id="enableSecurityCheck" checked class="w-4 h-4 mt-1 text-orange-500 bg-dark-500 border-dark-400 rounded focus:ring-orange-500">
+                <div class="ml-3">
+                  <div class="font-medium text-white">Security Analysis</div>
+                  <div class="text-gray-400 text-xs mt-1">Check for common security vulnerabilities</div>
+                </div>
+              </label>
+              
+              <label class="flex items-start p-3 bg-dark-600 rounded-lg border border-dark-500 cursor-pointer hover:border-orange-500/50 transition">
+                <input type="checkbox" id="enablePerformance" checked class="w-4 h-4 mt-1 text-orange-500 bg-dark-500 border-dark-400 rounded focus:ring-orange-500">
+                <div class="ml-3">
+                  <div class="font-medium text-white">Performance Optimization</div>
+                  <div class="text-gray-400 text-xs mt-1">Analyze time/space complexity, suggest optimizations</div>
+                </div>
+              </label>
+              
+              <label class="flex items-start p-3 bg-dark-600 rounded-lg border border-dark-500 cursor-pointer hover:border-orange-500/50 transition">
+                <input type="checkbox" id="enableBestPractices" checked class="w-4 h-4 mt-1 text-orange-500 bg-dark-500 border-dark-400 rounded focus:ring-orange-500">
+                <div class="ml-3">
+                  <div class="font-medium text-white">Best Practices Enforcement</div>
+                  <div class="text-gray-400 text-xs mt-1">Apply SOLID principles, design patterns, clean code</div>
+                </div>
+              </label>
+            </div>
+          </div>
+          
+          <!-- Code Style -->
+          <div class="mb-6">
+            <h4 class="text-sm font-medium text-gray-300 mb-3">Code Style & Documentation</h4>
+            <div class="bg-dark-600 rounded-lg p-4">
+              <select id="codeStyle" class="w-full bg-dark-700 text-gray-100 rounded-lg p-3 border border-dark-500 focus:outline-none focus:ring-2 focus:ring-orange-500">
+                <option value="professional" selected>Professional - Full documentation, error handling, types</option>
+                <option value="production">Production - Battle-tested, scalable, maintainable</option>
+                <option value="tutorial">Tutorial - Educational with detailed comments</option>
+                <option value="minimal">Minimal - Clean, efficient, no extras</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Parameters Tab Content -->
+        <div id="parametersTab" class="tab-content hidden">
+          <h3 class="text-lg font-medium mb-4 pb-2 border-b border-dark-600">DeepSeek V3-0324 Parameters</h3>
+          
+          <div class="mb-4">
+            <div class="flex justify-between items-center mb-2">
+              <label for="temp" class="block text-sm font-medium text-gray-300">Temperature</label>
+              <span id="tempValue" class="text-sm text-gray-400">0.2</span>
+            </div>
+            <input type="range" id="temp" min="0" max="2" step="0.01" value="0.2" class="w-full h-2 rounded-lg appearance-none cursor-pointer">
+            <p class="text-xs text-gray-500 mt-1">Lower for more consistent code, higher for creative solutions</p>
+          </div>
+          
+          <div class="mb-4">
+            <div class="flex justify-between items-center mb-2">
+              <label for="maxTokens" class="block text-sm font-medium text-gray-300">Max Tokens</label>
+              <span id="maxTokensValue" class="text-sm text-gray-400">16384</span>
+            </div>
+            <input type="range" id="maxTokens" min="1024" max="32768" step="1024" value="16384" class="w-full h-2 rounded-lg appearance-none cursor-pointer">
+            <p class="text-xs text-gray-500 mt-1">Maximum length for complex implementations</p>
+          </div>
+        </div>
+        
+        <div class="flex justify-end gap-3 pt-4 mt-4 border-t border-dark-600">
+          <button id="closeSettings" class="px-4 py-2 bg-dark-600 hover:bg-dark-500 text-gray-300 rounded-lg transition">
+            Cancel
+          </button>
+          <button id="saveSettings" class="px-4 py-2 deepseek-gradient hover:from-deepseek-600 hover:to-deepseek-700 text-white rounded-lg transition">
+            Save Settings
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /***********************
+     * Enhanced Configuration for Dual Model RCI (Reflexive Code Intelligence)
+     ***********************/
+    const CONFIG = {
+      // Dual Model Configuration
+      primaryModel: "deepseek",      // Primary model for analysis and final answers
+      secondaryModel: "qwen",        // Secondary model for critique and validation
+      dualModelMode: true,           // Enable dual model system
+      
+      // RCI Configuration
+      analysisDepth: "standard", // quick, standard, deep
+      
+      // Error Prevention Settings
+      errorPrevention: {
+        enableTypeChecking: true,
+        enableEdgeCases: true,
+        enableSecurityCheck: true,
+        enablePerformance: true,
+        enableBestPractices: true
+      },
+      
+      // Code Style
+      codeStyle: "professional", // professional, production, tutorial, minimal
+      
+      // Generation Parameters
+      temperature: 0.2, // Lower for consistent code
+      maxTokens: 16384,
+      
+      // API Settings
+      apiKey: null // Will be set from environment
+    };
+
+    /*====================================
+     * REFLEXIVE CODE INTELLIGENCE (RCI) PROMPTS
+     * Superior Self-Reflection Based Methodology
+     ===================================*/
+    const RCI_PROMPTS = {
+      // Stage 1: Deep Analysis & Error Identification
+      deepAnalysis: () => `You are DeepSeek V3-0324 running REFLEXIVE CODE INTELLIGENCE (RCI) Engine.
+
+## STAGE 1: DEEP ANALYSIS & ERROR IDENTIFICATION
+
+**CRITICAL: First determine if this is a coding request or casual conversation**
+
+### INPUT CLASSIFICATION
+If the user's message is:
+- Simple greeting (hi, hello, hey, etc.) → Respond conversationally and ask what they'd like to code
+- Unclear/typo → Ask for clarification politely  
+- Non-coding related → Explain you're a coding assistant with RCI and ask for programming requirements
+- **CODING REQUEST** → Proceed with analysis below
+
+### FOR CODING REQUESTS ONLY:
+
+**Your task**: Perform comprehensive analysis and proactively identify potential errors BEFORE they occur.
+
+## REQUIREMENT ANALYSIS
+1. **Core Functionality**: What exactly needs to be built?
+2. **Technical Requirements**: Performance, scalability, security needs
+3. **Constraints & Limitations**: Platform, language, resource constraints
+4. **Success Criteria**: How to measure if the solution works correctly
+
+## ERROR IDENTIFICATION MATRIX
+Systematically identify potential errors in these categories:
+
+### 🔍 **LOGIC ERRORS**
+- Incorrect algorithms or business logic
+- Edge case failures (empty inputs, null values, boundary conditions)
+- Off-by-one errors, infinite loops, incorrect conditionals
+
+### 🔒 **SECURITY VULNERABILITIES**  
+- Input validation failures (SQL injection, XSS)
+- Authentication/authorization flaws
+- Data exposure risks, insecure API calls
+
+### ⚡ **PERFORMANCE ISSUES**
+- Inefficient algorithms (wrong time/space complexity)
+- Memory leaks, resource exhaustion
+- Blocking operations, poor scalability
+
+### 🔧 **INTEGRATION PROBLEMS**
+- API compatibility issues
+- Database connection failures
+- Third-party service dependencies
+
+### 📊 **DATA INTEGRITY ISSUES**
+- Type mismatches, format inconsistencies
+- Race conditions, concurrency problems
+- State management errors
+
+## COMPLEXITY ASSESSMENT
+Rate each component:
+- **Complexity Level**: 1-5 (1=trivial, 5=expert-level)
+- **Error Risk**: Low/Medium/High
+- **Testing Priority**: Critical/Important/Standard
+
+Format your response:
+## 📋 REQUIREMENTS ANALYSIS
+[Clear understanding and breakdown]
+
+## ⚠️ ERROR IDENTIFICATION MATRIX
+[Systematic error analysis by category]
+
+## 🎯 COMPLEXITY ASSESSMENT  
+[Risk levels and priorities]
+
+## 🚨 HIGH-RISK AREAS
+[Components requiring special attention]
+
+This analysis will guide our error prevention strategy in Stage 2.`,
+
+      // Stage 2: Error Prevention Strategy Planning
+      errorPreventionPlanning: () => `You are DeepSeek V3-0324 in STAGE 2: ERROR PREVENTION STRATEGY PLANNING.
+
+Based on the analysis from Stage 1, create specific, actionable strategies to PREVENT each identified error.
+
+## PREVENTION STRATEGY MATRIX
+
+For each high-risk area identified in Stage 1, create detailed prevention strategies:
+
+### 🛡️ **LOGIC ERROR PREVENTION**
+- **Validation Strategies**: Input validation rules, boundary checks
+- **Algorithm Verification**: Step-by-step logic validation
+- **Edge Case Handling**: Specific handling for each edge case
+
+### 🔐 **SECURITY PREVENTION**
+- **Input Sanitization**: Specific sanitization methods
+- **Authentication Strategy**: Security implementation plan  
+- **Data Protection**: Encryption, secure storage methods
+
+### ⚡ **PERFORMANCE PREVENTION**
+- **Optimization Strategy**: Algorithm improvements, caching
+- **Resource Management**: Memory/CPU usage optimization
+- **Scalability Planning**: Load handling strategies
+
+### 🔧 **INTEGRATION PREVENTION**
+- **Error Handling**: Graceful failure strategies
+- **Fallback Mechanisms**: Backup plans for service failures
+- **Testing Strategies**: Integration testing approaches
+
+### 📊 **DATA INTEGRITY PREVENTION**
+- **Type Safety**: Strict typing and validation
+- **Concurrency Control**: Thread safety measures
+- **State Management**: Proper state handling patterns
+
+## IMPLEMENTATION PRIORITIES
+1. **Critical Preventions** (Must implement immediately)
+2. **Important Preventions** (Implement during development)
+3. **Nice-to-Have Preventions** (Future enhancements)
+
+## TESTING STRATEGY
+- **Unit Tests**: Specific test cases for each prevention
+- **Integration Tests**: End-to-end validation
+- **Error Simulation**: Controlled failure testing
+
+Format your response:
+## 🛡️ ERROR PREVENTION STRATEGY MATRIX
+[Detailed prevention strategies for each risk category]
+
+## 📈 IMPLEMENTATION PRIORITY RANKING
+[Ordered list of what to implement first]
+
+## 🧪 TESTING & VALIDATION PLAN
+[Comprehensive testing strategy]
+
+## ✅ SUCCESS METRICS
+[How to measure prevention effectiveness]
+
+This strategy will guide the code generation in Stage 3.`,
+
+      // Stage 3: Professional Code Generation
+      professionalCodeGeneration: () => `You are DeepSeek V3-0324 in STAGE 3: PROFESSIONAL CODE GENERATION.
+
+Using the analysis from Stage 1 and prevention strategies from Stage 2, generate PRODUCTION-READY code that implements ALL identified preventions.
+
+## CODE GENERATION REQUIREMENTS
+
+### 🏗️ **ARCHITECTURE IMPLEMENTATION**
+- Follow the architecture decisions from Stage 1
+- Implement all prevention strategies from Stage 2
+- Use appropriate design patterns and best practices
+
+### 🛡️ **BUILT-IN ERROR PREVENTION**
+- **Every identified error** must have prevention code
+- Comprehensive input validation and sanitization
+- Graceful error handling with meaningful messages
+- Edge case handling for all identified scenarios
+
+### 📊 **QUALITY STANDARDS**
+- **Clean Code**: Readable, maintainable, well-structured
+- **Type Safety**: Strong typing where applicable
+- **Documentation**: Clear comments explaining complex logic
+- **Testing**: Include test cases for critical functionality
+
+### ⚡ **PERFORMANCE OPTIMIZATION**
+- Implement efficient algorithms identified in Stage 2
+- Proper resource management and cleanup
+- Caching strategies where beneficial
+
+### 🔒 **SECURITY IMPLEMENTATION**
+- All security measures from prevention strategy
+- Input validation, output encoding, secure defaults
+- Authentication/authorization as required
+
+## CODE STRUCTURE REQUIREMENTS
+1. **Main Implementation**: Core functionality with all preventions
+2. **Error Handling**: Comprehensive error management
+3. **Validation Functions**: Input/output validation
+4. **Test Cases**: Unit tests for critical paths
+5. **Documentation**: Usage examples and API docs
+
+## CODING STANDARDS
+- Code Style: ${CONFIG.codeStyle}
+- Error Prevention Level: All high and medium risks addressed
+- Documentation Level: Professional with examples
+- Testing Coverage: Critical paths and edge cases
+
+Format your response:
+## 💻 PRODUCTION-READY IMPLEMENTATION
+
+### Core Implementation
+[Main code with all preventions built-in]
+
+### Error Handling & Validation
+[Comprehensive error management code]
+
+### Test Cases
+[Unit tests and validation examples]
+
+### Documentation & Usage
+[Clear documentation with examples]
+
+### Installation & Setup
+[Setup instructions and dependencies]
+
+The code should be ready for production use with all identified errors prevented.`,
+
+      // Stage 4: Self-Reflection & Code Improvement
+      selfReflectionImprovement: () => `You are DeepSeek V3-0324 in STAGE 4: SELF-REFLECTION & CODE IMPROVEMENT.
+
+Perform critical self-evaluation of the entire RCI process and the generated code.
+
+## REFLEXIVE EVALUATION
+
+### 🔍 **ANALYSIS QUALITY REVIEW**
+- **Completeness**: Did Stage 1 identify all significant risks?
+- **Accuracy**: Were the identified errors realistic and relevant?
+- **Depth**: Was the analysis sufficiently thorough?
+
+### 🛡️ **PREVENTION STRATEGY REVIEW**
+- **Coverage**: Do strategies address all identified errors?
+- **Effectiveness**: Are the prevention methods robust?
+- **Practicality**: Are strategies realistic to implement?
+
+### 💻 **CODE QUALITY ASSESSMENT**
+- **Implementation Completeness**: Are all preventions actually implemented?
+- **Code Quality**: Is the code production-ready?
+- **Performance**: Are there efficiency improvements possible?
+- **Security**: Are all security measures properly implemented?
+
+## CRITICAL SELF-QUESTIONING
+1. **What errors might I have missed?**
+2. **What could still go wrong with this code?**
+3. **How could this solution be more robust?**
+4. **What would a senior developer critique about this approach?**
+5. **Are there simpler, more elegant solutions?**
+
+## IMPROVEMENT IDENTIFICATION
+### 🔧 **Immediate Improvements**
+- Critical fixes needed now
+- Missing error handling
+- Performance bottlenecks
+
+### 🚀 **Enhancement Opportunities** 
+- Additional features for robustness
+- Performance optimizations
+- Better user experience
+
+### 🎯 **Alternative Approaches**
+- Different architectural patterns
+- Alternative algorithms or libraries
+- Simpler implementation strategies
+
+## CONFIDENCE ASSESSMENT
+- **Overall Solution Quality**: 1-10 with justification
+- **Error Prevention Effectiveness**: 1-10 with reasoning
+- **Production Readiness**: 1-10 with explanation
+
+Format your response:
+## 🔍 REFLEXIVE ANALYSIS
+[Critical evaluation of all previous stages]
+
+## 🚨 IDENTIFIED WEAKNESSES
+[Honest assessment of potential problems]
+
+## 🔧 RECOMMENDED IMPROVEMENTS
+[Specific improvements with implementation guidance]
+
+## 💎 ALTERNATIVE APPROACHES
+[Better or simpler solutions if any exist]
+
+## 📊 CONFIDENCE & READINESS ASSESSMENT
+[Honest evaluation of solution quality and readiness]
+
+## ✅ FINAL VALIDATION
+[Comprehensive final check of the complete solution]
+
+This reflection ensures we deliver the highest quality, most robust solution possible.`
+    };
+
+    /*====================================
+     * Code Analysis Functions
+     ===================================*/
+    function analyzeCodeComplexity(message) {
+      const patterns = {
+        // Architecture indicators
+        hasArchitecture: /\b(architect|system|design|pattern|structure|framework|scalable|microservice|api|backend|frontend)\b/i,
+        
+        // Algorithm indicators
+        hasAlgorithm: /\b(algorithm|sort|search|optimize|complexity|recursive|dynamic programming|graph|tree)\b/i,
+        
+        // State management
+        hasState: /\b(state|redux|context|store|manage|lifecycle|hook|component)\b/i,
+        
+        // Database/Data
+        hasData: /\b(database|sql|query|crud|orm|schema|migrate|index|transaction)\b/i,
+        
+        // Security
+        hasSecurity: /\b(security|auth|encrypt|token|jwt|oauth|cors|sanitize|validate)\b/i,
+        
+        // Real-time/Async
+        hasAsync: /\b(async|promise|websocket|real-?time|stream|event|queue|worker)\b/i,
+        
+        // Testing
+        hasTesting: /\b(test|tdd|unit|integration|mock|coverage|jest|mocha)\b/i,
+        
+        // Deployment
+        hasDeployment: /\b(deploy|docker|kubernetes|ci\/cd|vercel|aws|cloud|server)\b/i
+      };
+
+      let criticalAreas = [];
+      
+      Object.entries(patterns).forEach(([key, pattern]) => {
+        if (pattern.test(message)) {
+          criticalAreas.push(key.replace('has', ''));
+        }
+      });
+
+      return {
+        criticalAreas,
+        complexity: criticalAreas.length >= 4 ? 'high' : criticalAreas.length >= 2 ? 'medium' : 'low',
+        needsDeepAnalysis: criticalAreas.length >= 3
+      };
+    }
+
+    /***********************
+     * Thread Management
+     ***********************/
+    let threads = [];
+    let currentThreadId = null;
+    let threadCounter = 1;
+    
+    function createNewThread() {
+      const newThread = {
+        id: Date.now(),
+        name: `Coding Session ${threadCounter++}`,
+        messages: [],
+        codeBlocks: [],
+        metadata: {
+          created: new Date().toISOString(),
+          model: CONFIG.currentModel
+        }
+      };
+      threads.push(newThread);
+      currentThreadId = newThread.id;
+      updateThreadList();
+      renderCurrentThreadMessages();
+      showNotification("New coding session created");
+    }
+    
+    function updateThreadList() {
+      const threadList = document.getElementById("threadList");
+      if (threadList) {
+        threadList.innerHTML = "";
+        threads.forEach(thread => {
+          const li = document.createElement("li");
+          li.className = "px-4 py-3 rounded-xl cursor-pointer hover:bg-dark-600 transition-all duration-200 border border-dark-500/50";
+          
+          if (thread.id === currentThreadId) {
+            li.classList.add("bg-dark-600/50", "text-deepseek-300", "border-deepseek-500/50");
+          } else {
+            li.classList.add("text-gray-300", "hover:border-deepseek-500/50");
+          }
+          
+          li.innerHTML = `
+            <div class="flex items-center gap-3">
+              <div class="w-8 h-8 bg-deepseek-500/20 rounded-lg flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-deepseek-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
+                </svg>
+              </div>
+              <div class="flex-1 min-w-0">
+                <p class="text-sm font-medium text-white truncate">${thread.name}</p>
+                <p class="text-xs text-gray-400">${formatTimeAgo(thread.metadata.created)}</p>
+              </div>
+            </div>
+          `;
+          
+          li.addEventListener("click", () => {
+            currentThreadId = thread.id;
+            renderCurrentThreadMessages();
+            updateThreadList();
+          });
+          threadList.appendChild(li);
+        });
+      }
+      
+      const threadCountEl = document.getElementById("threadCount");
+      if (threadCountEl) {
+        threadCountEl.textContent = threads.length;
+      }
+    }
+
+    function formatTimeAgo(timestamp) {
+      const now = new Date();
+      const then = new Date(timestamp);
+      const diffMs = now - then;
+      const diffMins = Math.floor(diffMs / 60000);
+      
+      if (diffMins < 1) return 'Just now';
+      if (diffMins < 60) return `${diffMins}m ago`;
+      
+      const diffHours = Math.floor(diffMins / 60);
+      if (diffHours < 24) return `${diffHours}h ago`;
+      
+      const diffDays = Math.floor(diffHours / 24);
+      return `${diffDays}d ago`;
+    }
+
+    /***********************
+     * Enhanced Message Rendering for Code
+     ***********************/
+    function formatAnalysisBlock(content) {
+      let html = '<div class="analysis-block code-analysis rounded-lg p-4 mb-4">';
+      html += '<div class="text-green-300 font-semibold mb-2 flex items-center gap-2">';
+      html += '<span>📋</span><span>Requirements Analysis</span>';
+      html += '<span class="bg-green-600/20 text-green-300 text-xs px-2 py-1 rounded-full ml-auto">STAGE 1</span>';
+      html += '</div>';
+      html += '<div class="text-gray-100 text-sm">' + transformMessage(content) + '</div>';
+      html += '</div>';
+      return html;
+    }
+    
+    function formatCriticalParts(content) {
+      let html = '<div class="critical-parts error-prevention rounded-lg p-4 mb-4">';
+      html += '<div class="text-orange-300 font-semibold mb-2 flex items-center gap-2">';
+      html += '<span>⚠️</span><span>Critical Parts Identified</span>';
+      html += '<span class="bg-orange-600/20 text-orange-300 text-xs px-2 py-1 rounded-full ml-auto">STAGE 2</span>';
+      html += '</div>';
+      html += '<div class="text-gray-100 text-sm">' + transformMessage(content) + '</div>';
+      html += '</div>';
+      return html;
+    }
+    
+    function formatCoDForPart(content, partName) {
+      let html = '<div class="cod-block bg-purple-900/20 border border-purple-500/30 rounded-lg p-4 mb-4">';
+      html += '<div class="text-purple-300 font-semibold mb-3 flex items-center gap-2">';
+      html += `<span>⚡</span><span>Chain of Draft: ${partName}</span>`;
+      html += '<span class="bg-purple-600/20 text-purple-300 text-xs px-2 py-1 rounded-full ml-auto">STAGE 3</span>';
+      html += '</div>';
+      
+      // Extract and format Draft sections
+      const lines = content.split('\n');
+      let currentSection = '';
+      let draftHtml = '<div class="space-y-4 mb-4">';
+      
+      lines.forEach(line => {
+        if (line.startsWith('## DRAFT 1:')) {
+          currentSection = 'draft1';
+          draftHtml += `
+            <div class="bg-purple-800/20 border border-purple-600/30 rounded-lg p-3">
+              <div class="flex items-center gap-2 mb-2">
+                <span class="w-6 h-6 bg-purple-700 text-white text-xs font-bold rounded-full flex items-center justify-center">1</span>
+                <span class="text-purple-200 font-medium">Initial Solution Outline</span>
+              </div>
+              <div class="text-purple-100 text-sm">
+          `;
+        } else if (line.startsWith('## CRITIQUE 1:')) {
+          currentSection = 'critique1';
+          draftHtml += `
+              </div>
+            </div>
+            <div class="bg-orange-800/20 border border-orange-600/30 rounded-lg p-3">
+              <div class="flex items-center gap-2 mb-2">
+                <span class="w-6 h-6 bg-orange-700 text-white text-xs font-bold rounded-full flex items-center justify-center">📝</span>
+                <span class="text-orange-200 font-medium">Review & Identify Issues</span>
+              </div>
+              <div class="text-orange-100 text-sm">
+          `;
+        } else if (line.startsWith('## DRAFT 2:')) {
+          currentSection = 'draft2';
+          draftHtml += `
+              </div>
+            </div>
+            <div class="bg-purple-800/20 border border-purple-600/30 rounded-lg p-3">
+              <div class="flex items-center gap-2 mb-2">
+                <span class="w-6 h-6 bg-purple-700 text-white text-xs font-bold rounded-full flex items-center justify-center">2</span>
+                <span class="text-purple-200 font-medium">Refined Solution</span>
+              </div>
+              <div class="text-purple-100 text-sm">
+          `;
+        } else if (line.startsWith('## CRITIQUE 2:')) {
+          currentSection = 'critique2';
+          draftHtml += `
+              </div>
+            </div>
+            <div class="bg-orange-800/20 border border-orange-600/30 rounded-lg p-3">
+              <div class="flex items-center gap-2 mb-2">
+                <span class="w-6 h-6 bg-orange-700 text-white text-xs font-bold rounded-full flex items-center justify-center">📝</span>
+                <span class="text-orange-200 font-medium">Final Review</span>
+              </div>
+              <div class="text-orange-100 text-sm">
+          `;
+        } else if (line.startsWith('## DRAFT 3:')) {
+          currentSection = 'draft3';
+          draftHtml += `
+              </div>
+            </div>
+            <div class="bg-green-800/20 border border-green-600/30 rounded-lg p-3">
+              <div class="flex items-center gap-2 mb-2">
+                <span class="w-6 h-6 bg-green-700 text-white text-xs font-bold rounded-full flex items-center justify-center">3</span>
+                <span class="text-green-200 font-medium">Final Polished Solution</span>
+              </div>
+              <div class="text-green-100 text-sm">
+          `;
+        } else if (line.startsWith('## IMPLEMENTATION STRATEGY')) {
+          draftHtml += `
+              </div>
+            </div>
+          `;
+          currentSection = 'implementation';
+        } else if (currentSection && line.trim() && !line.startsWith('##')) {
+          draftHtml += line + '<br>';
+        }
+      });
+      
+      draftHtml += '</div>';
+      html += draftHtml;
+      
+      // Add implementation strategy
+      const implementationIndex = content.indexOf('## IMPLEMENTATION STRATEGY');
+      if (implementationIndex !== -1) {
+        const implementationContent = content.substring(implementationIndex);
+        html += '<div class="bg-gradient-to-r from-blue-900/20 to-indigo-900/20 border border-blue-500/30 rounded-lg p-4 mt-4">';
+        html += '<div class="text-blue-300 font-semibold mb-2 flex items-center gap-2">';
+        html += '<span>🎯</span><span>Implementation Strategy</span>';
+        html += '</div>';
+        html += '<div class="text-gray-100 text-sm">' + transformMessage(implementationContent) + '</div>';
+        html += '</div>';
+      }
+      
+      html += '</div>';
+      return html;
+    }
+    
+    function formatReflection(content, partName) {
+      let html = '<div class="reflection-block bg-indigo-900/20 border border-indigo-500/30 rounded-lg p-4 mb-4">';
+      html += '<div class="text-indigo-300 font-semibold mb-2 flex items-center gap-2">';
+      html += `<span>🔍</span><span>Reflection: ${partName}</span>`;
+      html += '<span class="bg-indigo-600/20 text-indigo-300 text-xs px-2 py-1 rounded-full ml-auto">STAGE 4</span>';
+      html += '</div>';
+      html += '<div class="text-gray-100 text-sm">' + transformMessage(content) + '</div>';
+      html += '</div>';
+      return html;
+    }
+    
+    function formatFinalCode(content) {
+      let html = '<div class="code-block bg-gradient-to-r from-green-900/20 to-emerald-900/20 border border-green-500/30 rounded-lg p-4">';
+      html += '<div class="text-emerald-300 font-semibold mb-3 flex items-center gap-2">';
+      html += '<span>✅</span><span>Professional Code Implementation</span>';
+      html += '<span class="bg-emerald-600/20 text-emerald-300 text-xs px-2 py-1 rounded-full ml-auto">FINAL</span>';
+      html += '</div>';
+      html += '<div class="text-gray-100">' + transformMessage(content) + '</div>';
+      html += '</div>';
+      return html;
+    }
+    
+    function formatConversationMessage(content) {
+      let html = '<div class="conversation-message bg-blue-900/20 border border-blue-500/30 rounded-lg p-4 mb-4">';
+      html += '<div class="text-blue-300 font-semibold mb-3 flex items-center gap-2">';
+      html += '<span>💬</span><span>Assistant Response</span>';
+      html += '</div>';
+      html += '<div class="text-gray-100 text-sm">' + transformMessage(content) + '</div>';
+      html += '</div>';
+      return html;
+    }
+
+    /***********************
+     * Export Functions
+     ***********************/
+    function downloadCodeOnly() {
+      const thread = threads.find(t => t.id === currentThreadId);
+      if (!thread || !thread.codeBlocks || thread.codeBlocks.length === 0) {
+        showNotification("No code found in this session");
+        return;
+      }
+      
+      let content = '';
+      thread.codeBlocks.forEach((block, index) => {
+        if (index > 0) content += '\n\n' + '='.repeat(60) + '\n\n';
+        content += `// Language: ${block.language}\n`;
+        content += block.code;
+      });
+      
+      downloadFile(content, `code_${thread.name.replace(/\s+/g, '_')}.txt`, 'text/plain');
+    }
+
+    function downloadFullAnalysis() {
+      const thread = threads.find(t => t.id === currentThreadId);
+      if (!thread) {
+        showNotification("No active session found");
+        return;
+      }
+      
+      let content = `Enhanced Coding CoD Studio - DeepSeek V3-0324\n`;
+      content += `Session: ${thread.name}\n`;
+      content += `Date: ${new Date().toLocaleString()}\n\n`;
+      content += `${'='.repeat(60)}\n\n`;
+      
+      thread.messages.forEach(msg => {
+        if (msg.isPlaceholder) return;
+        
+        content += `[${msg.sender.toUpperCase()}]\n`;
+        if (msg.stageInfo) content += `Stage: ${msg.stageInfo}\n`;
+        content += `${msg.content}\n\n`;
+        content += '-'.repeat(60) + '\n\n';
+      });
+      
+      downloadFile(content, `analysis_${thread.name.replace(/\s+/g, '_')}.txt`, 'text/plain');
+    }
+
+    function downloadFile(content, filename, type) {
+      const blob = new Blob([content], { type });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      a.style.display = 'none';
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(() => {
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }, 100);
+      showNotification(`Downloaded: ${filename}`);
+    }
+
+    /***********************
+     * Settings Management
+     ***********************/
+    function setupTabNavigation() {
+      const tabButtons = document.querySelectorAll('.tab-btn');
+      const tabContents = document.querySelectorAll('.tab-content');
+      
+      tabButtons.forEach(button => {
+        button.addEventListener('click', () => {
+          tabButtons.forEach(btn => {
+            btn.classList.remove('bg-deepseek-500', 'text-white');
+            btn.classList.add('text-gray-400');
+          });
+          tabContents.forEach(content => {
+            content.classList.add('hidden');
+          });
+          
+          button.classList.add('bg-deepseek-500', 'text-white');
+          button.classList.remove('text-gray-400');
+          
+          const tabId = button.getAttribute('data-tab');
+          const tabContent = document.getElementById(tabId);
+          if (tabContent) {
+            tabContent.classList.remove('hidden');
+          }
+        });
+      });
+    }
+    
+    function setupSliders() {
+      document.querySelectorAll('input[type="range"]').forEach(slider => {
+        const valueDisplay = document.getElementById(`${slider.id}Value`);
+        if (valueDisplay) {
+          valueDisplay.textContent = slider.value;
+          updateRangeColor(slider);
+          slider.addEventListener('input', () => {
+            valueDisplay.textContent = slider.value;
+            updateRangeColor(slider);
+          });
+        }
+      });
+    }
+    
+    function updateRangeColor(slider) {
+      const min = parseFloat(slider.min) || 0;
+      const max = parseFloat(slider.max) || 1;
+      const value = parseFloat(slider.value) || 0;
+      const percent = ((value - min) / (max - min)) * 100;
+      slider.style.setProperty('--value-percent', `${percent}%`);
+    }
+
+    function openSettingsModal() {
+      // Set analysis depth
+      const depthRadio = document.getElementById(`${CONFIG.analysisDepth}Analysis`);
+      if (depthRadio) depthRadio.checked = true;
+      
+      // Set error prevention settings
+      Object.entries(CONFIG.errorPrevention).forEach(([key, value]) => {
+        const checkbox = document.getElementById(key);
+        if (checkbox) checkbox.checked = value;
+      });
+      
+      // Set code style
+      const codeStyleSelect = document.getElementById('codeStyle');
+      if (codeStyleSelect) codeStyleSelect.value = CONFIG.codeStyle;
+      
+      // Set parameters
+      setSliderAndValue("temp", CONFIG.temperature);
+      setSliderAndValue("maxTokens", CONFIG.maxTokens);
+      
+      const modal = document.getElementById("settingsModal");
+      if (modal) modal.style.display = "flex";
+    }
+
+    function setSliderAndValue(id, value) {
+      const slider = document.getElementById(id);
+      const valueDisplay = document.getElementById(`${id}Value`);
+      if (slider) {
+        slider.value = value;
+        updateRangeColor(slider);
+      }
+      if (valueDisplay) valueDisplay.textContent = value;
+    }
+    
+    function closeSettingsModal() {
+      const modal = document.getElementById("settingsModal");
+      if (modal) modal.style.display = "none";
+    }
+    
+    function saveSettings() {
+      // Save analysis depth
+      const depthRadios = document.getElementsByName("analysisDepth");
+      for (const radio of depthRadios) {
+        if (radio.checked) CONFIG.analysisDepth = radio.value;
+      }
+      
+      // Save error prevention settings
+      Object.keys(CONFIG.errorPrevention).forEach(key => {
+        const checkbox = document.getElementById(key);
+        if (checkbox) CONFIG.errorPrevention[key] = checkbox.checked;
+      });
+      
+      // Save code style
+      const codeStyleSelect = document.getElementById('codeStyle');
+      if (codeStyleSelect) CONFIG.codeStyle = codeStyleSelect.value;
+      
+      // Save parameters
+      CONFIG.temperature = parseFloat(document.getElementById("temp").value);
+      CONFIG.maxTokens = parseInt(document.getElementById("maxTokens").value);
+      
+      // Save to localStorage
+      localStorage.setItem("codingCodConfig", JSON.stringify(CONFIG));
+      
+      closeSettingsModal();
+      showNotification("Settings saved");
+    }
+
+    /***********************
+     * RCI Message Processing Functions
+     ***********************/
+    async function processWithRCI(userMessage) {
+      const thread = threads.find(t => t.id === currentThreadId);
+      if (!thread) return;
+
+      // Add user message
+      thread.messages.push({
+        id: Date.now(),
+        sender: 'user',
+        content: userMessage,
+        timestamp: new Date().toISOString()
+      });
+
+      // Show loading state
+      showProgressBar();
+      renderCurrentThreadMessages();
+
+      try {
+        // Run all RCI stages
+        await runRCIStage1(userMessage, thread);
+        await runRCIStage2(thread);
+        await runRCIStage3(thread);
+        await runRCIStage4(thread);
+      } catch (error) {
+        console.error('RCI Processing Error:', error);
+        showNotification('Error during RCI processing: ' + error.message);
+      } finally {
+        hideProgressBar();
+        renderCurrentThreadMessages();
+      }
+    }
+
+    async function runRCIStage1(userMessage, thread) {
+      const prompt = RCI_PROMPTS.deepAnalysis();
+      const response = await callDeepSeekAPI([
+        { role: 'system', content: prompt },
+        { role: 'user', content: userMessage }
+      ]);
+
+      thread.messages.push({
+        id: Date.now(),
+        sender: 'assistant',
+        content: response,
+        timestamp: new Date().toISOString(),
+        stageInfo: 'Stage 1: Deep Analysis & Error Identification',
+        type: 'rci-analysis'
+      });
+
+      updateProgress(25);
+      renderCurrentThreadMessages();
+    }
+
+    async function runRCIStage2(thread) {
+      const lastAnalysis = thread.messages[thread.messages.length - 1];
+      const prompt = RCI_PROMPTS.errorPreventionPlanning();
+      
+      // Primary analysis by DeepSeek
+      const primaryResponse = await callDeepSeekAPI([
+        { role: 'system', content: prompt },
+        { role: 'user', content: `Based on this analysis:\n\n${lastAnalysis.content}\n\nCreate detailed error prevention strategies.` }
+      ], "deepseek");
+
+      thread.messages.push({
+        id: Date.now(),
+        sender: 'assistant',
+        content: primaryResponse,
+        timestamp: new Date().toISOString(),
+        stageInfo: 'Stage 2a: Error Prevention Planning (DeepSeek)',
+        type: 'rci-prevention',
+        modelUsed: 'deepseek'
+      });
+
+      updateProgress(50);
+      renderCurrentThreadMessages();
+
+      // Dual model validation with Qwen if enabled
+      if (CONFIG.dualModelMode) {
+        const validationPrompt = `Review and validate this error prevention strategy. Identify any gaps, suggest improvements, and provide additional error scenarios that should be considered:
+
+ORIGINAL ANALYSIS:
+${lastAnalysis.content}
+
+ERROR PREVENTION STRATEGY:
+${primaryResponse}
+
+Please provide constructive critique and enhancements.`;
+
+        const qwenValidation = await callQwenAPI([
+          { role: 'system', content: 'You are Qwen, an expert code reviewer and validation specialist. Your role is to critically evaluate error prevention strategies and suggest improvements.' },
+          { role: 'user', content: validationPrompt }
+        ]);
+
+        thread.messages.push({
+          id: Date.now() + 1,
+          sender: 'assistant',
+          content: qwenValidation,
+          timestamp: new Date().toISOString(),
+          stageInfo: 'Stage 2b: Strategy Validation (Qwen)',
+          type: 'rci-validation',
+          modelUsed: 'qwen'
+        });
+
+        updateProgress(62);
+        renderCurrentThreadMessages();
+      }
+    }
+
+    async function runRCIStage3(thread) {
+      const lastStrategy = thread.messages[thread.messages.length - 1];
+      const analysis = thread.messages[thread.messages.length - 2];
+      const prompt = RCI_PROMPTS.professionalCodeGeneration();
+      
+      const response = await callDeepSeekAPI([
+        { role: 'system', content: prompt },
+        { role: 'user', content: `Based on this analysis and prevention strategy:\n\nANALYSIS:\n${analysis.content}\n\nPREVENTION STRATEGY:\n${lastStrategy.content}\n\nGenerate professional code with all preventions implemented.` }
+      ]);
+
+      thread.messages.push({
+        id: Date.now(),
+        sender: 'assistant',
+        content: response,
+        timestamp: new Date().toISOString(),
+        stageInfo: 'Stage 3: Professional Code Generation',
+        type: 'rci-code'
+      });
+
+      // Extract and store code blocks
+      extractCodeBlocks(response, thread);
+      updateProgress(75);
+      renderCurrentThreadMessages();
+    }
+
+    async function runRCIStage4(thread) {
+      const codeMessage = thread.messages[thread.messages.length - 1];
+      const strategyMessage = thread.messages.find(m => m.type === 'rci-prevention' && m.modelUsed === 'deepseek');
+      const analysisMessage = thread.messages.find(m => m.type === 'rci-analysis');
+      
+      const prompt = RCI_PROMPTS.selfReflectionImprovement();
+      
+      // Primary self-reflection by DeepSeek
+      const deepseekReflection = await callDeepSeekAPI([
+        { role: 'system', content: prompt },
+        { role: 'user', content: `Perform self-reflection on this complete RCI process:\n\nANALYSIS:\n${analysisMessage.content}\n\nPREVENTION STRATEGY:\n${strategyMessage.content}\n\nGENERATED CODE:\n${codeMessage.content}\n\nProvide critical evaluation and improvements.` }
+      ], "deepseek");
+
+      thread.messages.push({
+        id: Date.now(),
+        sender: 'assistant',
+        content: deepseekReflection,
+        timestamp: new Date().toISOString(),
+        stageInfo: 'Stage 4a: Self-Reflection & Code Review (DeepSeek)',
+        type: 'rci-reflection',
+        modelUsed: 'deepseek'
+      });
+
+      updateProgress(85);
+      renderCurrentThreadMessages();
+
+      // Dual model cross-validation with Qwen if enabled
+      if (CONFIG.dualModelMode) {
+        const consensusPrompt = `As Qwen, provide a final validation and consensus on this complete RCI process. Evaluate the quality of analysis, prevention strategies, code generation, and self-reflection. Provide a final assessment and any critical improvements needed:
+
+ANALYSIS (DeepSeek):
+${analysisMessage.content}
+
+PREVENTION STRATEGY (DeepSeek):
+${strategyMessage.content}
+
+GENERATED CODE (DeepSeek):
+${codeMessage.content}
+
+SELF-REFLECTION (DeepSeek):
+${deepseekReflection}
+
+Please provide final consensus and validation.`;
+
+        const qwenConsensus = await callQwenAPI([
+          { role: 'system', content: 'You are Qwen, providing final consensus and validation for the dual-model RCI process. Evaluate all stages and provide comprehensive final assessment.' },
+          { role: 'user', content: consensusPrompt }
+        ]);
+
+        thread.messages.push({
+          id: Date.now() + 1,
+          sender: 'assistant',
+          content: qwenConsensus,
+          timestamp: new Date().toISOString(),
+          stageInfo: 'Stage 4b: Cross-Model Consensus & Final Validation (Qwen)',
+          type: 'rci-consensus',
+          modelUsed: 'qwen'
+        });
+
+        updateProgress(95);
+        renderCurrentThreadMessages();
+      }
+
+      updateProgress(100);
+      renderCurrentThreadMessages();
+    }
+
+    async function callDeepSeekAPI(messages, modelType = "deepseek") {
+      try {
+        const response = await fetch('/api/chat', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            messages,
+            model: modelType,
+            temperature: CONFIG.temperature,
+            max_tokens: CONFIG.maxTokens,
+            top_p: 0.9,
+            top_k: 40
+          })
+        });
+
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(error.message || 'API request failed');
+        }
+
+        const data = await response.json();
+        return data.choices[0].message.content;
+      } catch (error) {
+        console.error('API Error:', error);
+        throw new Error(`Failed to communicate with ${modelType.toUpperCase()} API: ` + error.message);
+      }
+    }
+
+    // New function specifically for Qwen model
+    async function callQwenAPI(messages) {
+      return await callDeepSeekAPI(messages, "qwen");
+    }
+
+    function extractCodeBlocks(content, thread) {
+      const codeBlockRegex = /```(\w+)?\n([\s\S]*?)```/g;
+      let match;
+      
+      while ((match = codeBlockRegex.exec(content)) !== null) {
+        const language = match[1] || 'text';
+        const code = match[2].trim();
+        
+        if (code.length > 10) { // Only store substantial code blocks
+          thread.codeBlocks = thread.codeBlocks || [];
+          thread.codeBlocks.push({
+            id: Date.now() + Math.random(),
+            language,
+            code,
+            timestamp: new Date().toISOString()
+          });
+        }
+      }
+    }
+
+    function showProgressBar() {
+      const container = document.getElementById('progressContainer');
+      if (container) {
+        container.classList.remove('hidden');
+        updateProgress(0);
+      }
+    }
+
+    function hideProgressBar() {
+      const container = document.getElementById('progressContainer');
+      if (container) {
+        setTimeout(() => {
+          container.classList.add('hidden');
+        }, 1000);
+      }
+    }
+
+    function updateProgress(percent) {
+      const bar = document.getElementById('progressBar');
+      if (bar) {
+        bar.style.width = `${percent}%`;
+      }
+    }
+
+    async function sendCodingMessage(message) {
+      if (!message.trim()) return;
+      
+      try {
+        await processWithRCI(message);
+      } catch (error) {
+        console.error('Error sending message:', error);
+        showNotification('Failed to send message: ' + error.message);
+      }
+    }
+
+    /***********************
+     * Enhanced Message Rendering for RCI
+     ***********************/
+    function renderCurrentThreadMessages() {
+      const chatMessages = document.getElementById("chatMessages");
+      if (!chatMessages) return;
+
+      const thread = threads.find(t => t.id === currentThreadId);
+      if (!thread) {
+        chatMessages.innerHTML = "";
+        return;
+      }
+
+      chatMessages.innerHTML = "";
+      
+      thread.messages.forEach(message => {
+        if (message.isPlaceholder) return;
+        
+        const messageDiv = document.createElement("div");
+        messageDiv.className = "message-container mb-6";
+        
+        if (message.sender === "user") {
+          messageDiv.innerHTML = `
+            <div class="flex justify-end">
+              <div class="bg-deepseek-600 text-white rounded-2xl px-4 py-3 max-w-[80%] shadow-lg">
+                <div class="text-sm font-medium mb-1">You</div>
+                <div class="text-gray-100">${escapeHtml(message.content)}</div>
+                <div class="text-xs text-deepseek-200 mt-2 opacity-70">${formatTime(message.timestamp)}</div>
+              </div>
+            </div>
+          `;
+        } else {
+          // Assistant message with RCI formatting
+          let formattedContent = '';
+          
+          switch (message.type) {
+            case 'rci-analysis':
+              formattedContent = formatRCIAnalysis(message.content);
+              break;
+            case 'rci-prevention':
+              formattedContent = formatRCIPrevention(message.content);
+              break;
+            case 'rci-code':
+              formattedContent = formatRCICode(message.content);
+              break;
+            case 'rci-reflection':
+              formattedContent = formatRCIReflection(message.content);
+              break;
+            default:
+              formattedContent = formatConversationMessage(message.content);
+          }
+          
+          messageDiv.innerHTML = `
+            <div class="flex justify-start">
+              <div class="max-w-[95%] w-full">
+                ${message.stageInfo ? `<div class="stage-header mb-3">
+                  <div class="flex items-center gap-3 text-sm text-gray-400">
+                    <div class="stage-indicator w-3 h-3 bg-deepseek-400 rounded-full"></div>
+                    <span class="font-medium">${message.stageInfo}</span>
+                    <div class="flex-1 h-px bg-dark-600"></div>
+                  </div>
+                </div>` : ''}
+                ${formattedContent}
+                <div class="text-xs text-gray-500 mt-3">${formatTime(message.timestamp)}</div>
+              </div>
+            </div>
+          `;
+        }
+        
+        chatMessages.appendChild(messageDiv);
+      });
+      
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    function formatRCIAnalysis(content) {
+      return `
+        <div class="rci-stage analysis-block code-analysis rounded-lg p-4 mb-4">
+          <div class="text-green-300 font-semibold mb-3 flex items-center gap-2">
+            <span>🔍</span><span>Deep Analysis & Error Identification</span>
+            <span class="bg-green-600/20 text-green-300 text-xs px-2 py-1 rounded-full ml-auto">STAGE 1</span>
+          </div>
+          <div class="text-gray-100 text-sm">${transformMessage(content)}</div>
+        </div>
+      `;
+    }
+
+    function formatRCIPrevention(content) {
+      return `
+        <div class="rci-stage error-prevention rounded-lg p-4 mb-4">
+          <div class="text-orange-300 font-semibold mb-3 flex items-center gap-2">
+            <span>🛡️</span><span>Error Prevention Strategy Planning</span>
+            <span class="bg-orange-600/20 text-orange-300 text-xs px-2 py-1 rounded-full ml-auto">STAGE 2</span>
+          </div>
+          <div class="text-gray-100 text-sm">${transformMessage(content)}</div>
+        </div>
+      `;
+    }
+
+    function formatRCICode(content) {
+      return `
+        <div class="rci-stage best-practice rounded-lg p-4 mb-4">
+          <div class="text-purple-300 font-semibold mb-3 flex items-center gap-2">
+            <span>💻</span><span>Professional Code Generation</span>
+            <span class="bg-purple-600/20 text-purple-300 text-xs px-2 py-1 rounded-full ml-auto">STAGE 3</span>
+          </div>
+          <div class="text-gray-100 text-sm">${transformMessage(content)}</div>
+        </div>
+      `;
+    }
+
+    function formatRCIReflection(content) {
+      return `
+        <div class="rci-stage bg-gradient-to-r from-indigo-900/20 to-blue-900/20 border border-indigo-500/30 rounded-lg p-4 mb-4">
+          <div class="text-indigo-300 font-semibold mb-3 flex items-center gap-2">
+            <span>🎯</span><span>Self-Reflection & Code Improvement</span>
+            <span class="bg-indigo-600/20 text-indigo-300 text-xs px-2 py-1 rounded-full ml-auto">STAGE 4</span>
+          </div>
+          <div class="text-gray-100 text-sm">${transformMessage(content)}</div>
+        </div>
+      `;
+    }
+
+    function transformMessage(content) {
+      if (!content) return '';
+      
+      // Convert markdown-style formatting to HTML
+      let html = content
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.*?)\*/g, '<em>$1</em>')
+        .replace(/`([^`]+)`/g, '<code class="bg-dark-600 px-2 py-1 rounded text-sm font-mono">$1</code>')
+        .replace(/^### (.*$)/gim, '<h3 class="text-lg font-semibold mt-4 mb-2 text-white">$1</h3>')
+        .replace(/^## (.*$)/gim, '<h2 class="text-xl font-semibold mt-6 mb-3 text-white">$1</h2>')
+        .replace(/^# (.*$)/gim, '<h1 class="text-2xl font-bold mt-8 mb-4 text-white">$1</h1>')
+        .replace(/\n\n/g, '</p><p class="mb-2">')
+        .replace(/\n/g, '<br>');
+
+      // Handle code blocks
+      html = html.replace(/```(\w+)?\n([\s\S]*?)```/g, (match, language, code) => {
+        const lang = language || 'text';
+        const escapedCode = escapeHtml(code.trim());
+        return `
+          <div class="code-block bg-dark-800 rounded-lg overflow-hidden mt-4 mb-4 border border-dark-600">
+            <div class="bg-dark-700 px-4 py-2 text-xs text-gray-400 border-b border-dark-600 flex items-center justify-between">
+              <span class="font-mono">${lang}</span>
+              <button onclick="copyCode(this)" class="text-deepseek-400 hover:text-deepseek-300 transition">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                </svg>
+              </button>
+            </div>
+            <pre class="p-4 text-sm overflow-x-auto"><code class="language-${lang}">${escapedCode}</code></pre>
+          </div>
+        `;
+      });
+
+      // Handle bullet points
+      html = html.replace(/^[-*+] (.*)$/gm, '<li class="ml-4 mb-1">• $1</li>');
+      
+      // Wrap in paragraphs if not already wrapped
+      if (!html.startsWith('<')) {
+        html = '<p class="mb-2">' + html + '</p>';
+      }
+
+      return html;
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    function formatTime(timestamp) {
+      return new Date(timestamp).toLocaleTimeString('en-US', {
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    }
+
+    function copyCode(button) {
+      const codeBlock = button.closest('.code-block').querySelector('code');
+      const text = codeBlock.textContent;
+      
+      navigator.clipboard.writeText(text).then(() => {
+        showNotification('Code copied to clipboard');
+      }).catch(() => {
+        showNotification('Failed to copy code');
+      });
+    }
+
+    function showNotification(message) {
+      const notification = document.getElementById('statusNotification');
+      if (notification) {
+        notification.textContent = message;
+        notification.style.opacity = '1';
+        setTimeout(() => {
+          notification.style.opacity = '0';
+        }, 3000);
+      }
+    }
+
+    /***********************
+     * App Initialization
+     ***********************/
+    function loadPersistedSettings() {
+      try {
+        const savedConfig = localStorage.getItem("codingCodConfig");
+        if (savedConfig) {
+          const parsed = JSON.parse(savedConfig);
+          Object.assign(CONFIG, parsed);
+        }
+      } catch (error) {
+        console.warn("Failed to load saved settings:", error);
+      }
+    }
+    
+    function initApp() {
+      loadPersistedSettings();
+      createNewThread();
+      initEventListeners();
+    }
+    
+    function initEventListeners() {
+      const addListener = (id, event, handler) => {
+        const element = document.getElementById(id);
+        if (element) {
+          element.addEventListener(event, handler);
+        } else {
+          console.warn(`Element "${id}" not found`);
+        }
+      };
+      
+      addListener("openSettings", "click", openSettingsModal);
+      addListener("closeSettings", "click", closeSettingsModal);
+      addListener("closeModalX", "click", closeSettingsModal);
+      addListener("saveSettings", "click", saveSettings);
+      
+      addListener("newThreadBtn", "click", createNewThread);
+      addListener("downloadCodeBtn", "click", downloadCodeOnly);
+      addListener("downloadFullBtn", "click", downloadFullAnalysis);
+      
+      addListener("clearThreadBtn", "click", () => {
+        if (confirm("Clear all messages in this session?")) {
+          const thread = threads.find(t => t.id === currentThreadId);
+          if (thread) {
+            thread.messages = [];
+            thread.codeBlocks = [];
+            renderCurrentThreadMessages();
+            showNotification("Session cleared");
+          }
+        }
+      });
+      
+      const textarea = document.getElementById('userInput');
+      if (textarea) {
+        textarea.addEventListener('input', () => {
+          textarea.style.height = 'auto';
+          textarea.style.height = (textarea.scrollHeight) + 'px';
+        });
+        
+        textarea.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            document.getElementById('sendBtn')?.click();
+          }
+        });
+      }
+      
+      addListener("sendBtn", "click", () => {
+        const textarea = document.getElementById('userInput');
+        if (textarea) {
+          const message = textarea.value.trim();
+          if (message) {
+            sendCodingMessage(message);
+            textarea.value = '';
+            textarea.style.height = 'auto';
+          }
+        }
+      });
+      
+      // Mobile sidebar
+      addListener("mobileSidebarToggle", "click", () => {
+        const sidebar = document.querySelector('.md\\:flex');
+        if (sidebar) {
+          sidebar.classList.toggle('hidden');
+        }
+      });
+      
+      window.addEventListener("click", (event) => {
+        const settingsModal = document.getElementById("settingsModal");
+        if (settingsModal && event.target === settingsModal) {
+          closeSettingsModal();
+        }
+      });
+      
+      setTimeout(() => {
+        setupTabNavigation();
+        setupSliders();
+      }, 100);
+    }
+    
+    document.addEventListener("DOMContentLoaded", async function() {
+      if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.documentElement.classList.add('dark');
+      }
+      
+      initApp();
+    });
+  </script>
+</body>
+</html>
