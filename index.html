@@ -1,9 +1,10 @@
+
 <!DOCTYPE html>
 <html lang="en" class="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>RCI Engine V2 - DeepSeek V3-0324 & Qwen3 30B with Chain of Draft</title>
+  <title>Reflexive Code Intelligence - DeepSeek & Qwen Refinement Engine</title>
   
   <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -26,50 +27,16 @@
         extend: {
           colors: {
             primary: {
-              50: '#eef2ff',
-              100: '#e0e7ff',
-              200: '#c7d2fe',
-              300: '#a5b4fc',
-              400: '#818cf8',
-              500: '#5686f5',
-              600: '#4f46e5',
-              700: '#4338ca',
-              800: '#3730a3',
-              900: '#312e81',
-              950: '#1e1b4b',
+              50: '#eef2ff', 100: '#e0e7ff', 200: '#c7d2fe', 300: '#a5b4fc', 400: '#818cf8', 500: '#5686f5',
+              600: '#4f46e5', 700: '#4338ca', 800: '#3730a3', 900: '#312e81', 950: '#1e1b4b',
             },
             dark: {
-              100: '#d1d5db',
-              200: '#9ca3af',
-              300: '#6b7280',
-              400: '#4b5563',
-              500: '#374151',
-              600: '#1f2937',
-              700: '#111827',
-              800: '#0d1117',
-              900: '#030712',
+              100: '#d1d5db', 200: '#9ca3af', 300: '#6b7280', 400: '#4b5563', 500: '#374151',
+              600: '#1f2937', 700: '#111827', 800: '#0d1117', 900: '#030712',
             },
             deepseek: {
-              100: '#f0f9ff',
-              200: '#e0f2fe',
-              300: '#7dd3fc',
-              400: '#38bdf8',
-              500: '#0ea5e9',
-              600: '#0284c7',
-              700: '#0369a1',
-              800: '#075985',
-              900: '#0c4a6e',
-            },
-            qwen: {
-              100: '#fdf4ff',
-              200: '#fae8ff',
-              300: '#f3c6ff',
-              400: '#e879f9',
-              500: '#d946ef',
-              600: '#c026d3',
-              700: '#a21caf',
-              800: '#86198f',
-              900: '#701a75',
+              100: '#f0f9ff', 200: '#e0f2fe', 300: '#7dd3fc', 400: '#38bdf8', 500: '#0ea5e9',
+              600: '#0284c7', 700: '#0369a1', 800: '#075985', 900: '#0c4a6e',
             }
           },
           fontFamily: {
@@ -82,307 +49,141 @@
   </script>
 
   <style>
-    /* Base Styles */
-    :root {
-      --primary: #5686f5;
-      --deepseek: #0ea5e9;
-      --qwen: #d946ef;
-      --success: #10b981;
-      --warning: #f59e0b;
-      --error: #ef4444;
-      --code-green: #50fa7b;
-      --code-orange: #ffb86c;
-      --code-purple: #bd93f9;
-    }
-    
-    /* Custom Scrollbar */
-    ::-webkit-scrollbar {
-      width: 8px;
-      height: 8px;
-    }
-    
-    ::-webkit-scrollbar-track {
-      background: rgb(20, 24, 33);
-      border-radius: 8px;
-    }
-    
-    ::-webkit-scrollbar-thumb {
-      background: linear-gradient(180deg, rgba(14, 165, 233, 0.6) 0%, rgba(217, 70, 239, 0.6) 100%);
-      border-radius: 8px;
-    }
-    
-    ::-webkit-scrollbar-thumb:hover {
-      background: linear-gradient(180deg, rgba(14, 165, 233, 0.8) 0%, rgba(217, 70, 239, 0.8) 100%);
-    }
-
-    /* Enhanced Animations */
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    
-    @keyframes slideInLeft {
-      from { opacity: 0; transform: translateX(-20px); }
-      to { opacity: 1; transform: translateX(0); }
-    }
-    
-    @keyframes slideInRight {
-      from { opacity: 0; transform: translateX(20px); }
-      to { opacity: 1; transform: translateX(0); }
-    }
-    
-    @keyframes pulseGlow {
-      0%, 100% { 
-        box-shadow: 0 0 0 0 rgba(14, 165, 233, 0.4), 
-                    0 0 0 0 rgba(217, 70, 239, 0.4);
-      }
-      50% { 
-        box-shadow: 0 0 20px 10px rgba(14, 165, 233, 0.2), 
-                    0 0 20px 10px rgba(217, 70, 239, 0.2);
-      }
-    }
-    
-    /* Chain of Draft specific styling */
-    .cod-draft {
-      background: linear-gradient(135deg, rgba(14, 165, 233, 0.1) 0%, rgba(14, 165, 233, 0.05) 100%);
-      border-left: 3px solid var(--deepseek);
-      animation: slideInLeft 0.3s ease;
-    }
-    
-    .qwen-critique {
-      background: linear-gradient(135deg, rgba(217, 70, 239, 0.1) 0%, rgba(217, 70, 239, 0.05) 100%);
-      border-left: 3px solid var(--qwen);
-      animation: slideInRight 0.5s ease;
-    }
-    
-    .iteration-badge {
-      animation: pulseGlow 2s infinite;
-    }
-    
-    /* Progress indicator */
-    .progress-step {
-      transition: all 0.3s ease;
-    }
-    
-    .progress-step.active {
-      transform: scale(1.1);
-      filter: brightness(1.2);
-    }
-    
-    /* Code diff styling */
-    .code-diff-add {
-      background: rgba(80, 250, 123, 0.1);
-      border-left: 3px solid #50fa7b;
-    }
-    
-    .code-diff-remove {
-      background: rgba(255, 85, 85, 0.1);
-      border-left: 3px solid #ff5555;
-    }
-    
-    /* Model indicator animations */
-    @keyframes modelSwitch {
-      0% { transform: translateX(0); }
-      50% { transform: translateX(100%); opacity: 0.5; }
-      100% { transform: translateX(0); opacity: 1; }
-    }
-    
-    .model-switch {
-      animation: modelSwitch 0.5s ease;
-    }
-    
-    /* Enhanced code syntax highlighting */
-    .hljs {
-      background: #0d1117 !important;
-      padding: 1.5rem !important;
-      border-radius: 0.5rem !important;
-    }
-    
-    .hljs-keyword { color: #ff79c6 !important; }
-    .hljs-string { color: #f1fa8c !important; }
-    .hljs-number { color: #bd93f9 !important; }
-    .hljs-function { color: #50fa7b !important; }
-    .hljs-comment { color: #6272a4 !important; }
-    .hljs-class { color: #8be9fd !important; }
+    :root { --deepseek: #0ea5e9; }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: rgb(20, 24, 33); border-radius: 8px; }
+    ::-webkit-scrollbar-thumb { background: rgba(14, 165, 233, 0.6); border-radius: 8px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(14, 165, 233, 0.8); }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    .message-container { animation: fadeIn 0.5s ease-out; }
+    @keyframes pulse { 0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(14, 165, 233, 0.7); } 70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(14, 165, 233, 0); } 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(14, 165, 233, 0); } }
+    .stage-indicator { animation: pulse 2s infinite; }
+    .code-analysis { background: linear-gradient(135deg, rgba(80, 250, 123, 0.1) 0%, rgba(189, 147, 249, 0.1) 100%); border-left: 3px solid #50fa7b; }
+    .error-prevention { background: linear-gradient(135deg, rgba(255, 184, 108, 0.1) 0%, rgba(239, 68, 68, 0.1) 100%); border-left: 3px solid #ffb86c; }
+    .best-practice { background: linear-gradient(135deg, rgba(189, 147, 249, 0.1) 0%, rgba(86, 134, 245, 0.1) 100%); border-left: 3px solid #bd93f9; }
+    .progress-bar { background: linear-gradient(90deg, #0ea5e9 0%, #0284c7 100%); transition: width 0.3s ease; }
+    .deepseek-gradient { background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 50%, #075985 100%); }
+    .deepseek-glow { box-shadow: 0 0 20px rgba(14, 165, 233, 0.3); }
+    .hljs { background: #0d1117 !important; padding: 1.5rem !important; border-radius: 0.5rem !important; }
+    .blinking-cursor { animation: blink 1s step-end infinite; }
+    @keyframes blink { from, to { opacity: 1; } 50% { opacity: 0; } }
+    input[type="range"] { -webkit-appearance: none; width: 100%; height: 4px; background: #1f2937; border-radius: 4px; outline: none; background: linear-gradient(to right, var(--deepseek) var(--value-percent, 50%), #1f2937 var(--value-percent, 50%)) !important; }
+    input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; background: white !important; border-radius: 50%; cursor: pointer; border: 1px solid rgba(0, 0, 0, 0.1) !important; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1); margin-top: -6px; }
   </style>
 </head>
 <body class="bg-dark-800 text-gray-100 font-sans min-h-screen overflow-hidden">
   <div class="flex h-screen">
     <!-- Sidebar -->
-    <div class="w-80 bg-gradient-to-b from-dark-700 to-dark-800 border-r border-dark-600 flex flex-col overflow-y-auto hidden md:flex shadow-2xl">
+    <div class="w-80 bg-gradient-to-b from-dark-700 to-dark-800 border-r border-dark-600 flex-col overflow-y-auto hidden md:flex shadow-2xl">
       <!-- Header -->
       <div class="p-6 border-b border-dark-600/50">
         <div class="flex items-center gap-3 mb-4">
-          <div class="w-12 h-12 bg-gradient-to-br from-deepseek-500 to-qwen-500 rounded-xl flex items-center justify-center shadow-lg iteration-badge">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
-            </svg>
+          <div class="w-10 h-10 deepseek-gradient rounded-lg flex items-center justify-center deepseek-glow">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
           </div>
           <div>
-            <h2 class="text-lg font-bold text-white">RCI Engine V2</h2>
-            <p class="text-xs text-gray-400">DeepSeek V3-0324 + Qwen3 30B</p>
-            <p class="text-xs text-deepseek-300 mt-1">Chain of Draft Intelligence</p>
+            <h2 class="text-lg font-bold text-white">Reflexive Code Intelligence</h2>
+            <p class="text-xs text-deepseek-300">DeepSeek & Qwen Refinement Engine</p>
           </div>
         </div>
-        
-        <!-- New Session Button -->
-        <button id="newThreadBtn" class="w-full bg-gradient-to-r from-deepseek-500 to-qwen-500 hover:from-deepseek-600 hover:to-qwen-600 text-white py-3 px-4 rounded-xl transition-all duration-200 flex items-center justify-center gap-3 shadow-lg hover:shadow-xl transform hover:scale-105">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-          </svg>
-          <span class="font-medium">New Intelligence Session</span>
+        <button id="newThreadBtn" class="w-full deepseek-gradient hover:from-deepseek-600 hover:to-deepseek-700 text-white py-3 px-4 rounded-xl transition-all duration-200 flex items-center justify-center gap-3 shadow-lg hover:shadow-xl transform hover:scale-105 deepseek-glow">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+          <span class="font-medium">New Coding Session</span>
         </button>
       </div>
 
-      <!-- Model Status -->
+      <!-- System Status -->
       <div class="p-4 border-b border-dark-600/50">
-        <div class="space-y-3">
-          <!-- Primary Model: DeepSeek -->
+        <div class="space-y-3 mb-4">
           <div class="bg-gradient-to-r from-deepseek-900/20 to-blue-900/20 border border-deepseek-500/30 rounded-lg p-3">
             <div class="flex items-center justify-between mb-2">
               <div class="flex items-center gap-2">
                 <div class="w-2 h-2 bg-deepseek-400 rounded-full animate-pulse"></div>
-                <span class="text-deepseek-300 text-sm font-medium">DeepSeek V3-0324</span>
+                <span class="text-deepseek-300 text-sm font-medium">DeepSeek Coder</span>
                 <span class="bg-blue-500/20 text-blue-300 text-xs px-2 py-1 rounded-full">Primary</span>
               </div>
+              <span class="text-deepseek-400 text-xs bg-deepseek-900/30 px-2 py-1 rounded-full">Analysis & Refinement</span>
             </div>
-            <div class="text-deepseek-200 text-xs">Chain of Draft analysis & code generation</div>
           </div>
-          
-          <!-- Secondary Model: Qwen -->
-          <div class="bg-gradient-to-r from-qwen-900/20 to-purple-900/20 border border-qwen-500/30 rounded-lg p-3">
+          <div class="bg-gradient-to-r from-purple-900/20 to-pink-900/20 border border-purple-500/30 rounded-lg p-3">
             <div class="flex items-center justify-between mb-2">
               <div class="flex items-center gap-2">
-                <div class="w-2 h-2 bg-qwen-400 rounded-full animate-pulse"></div>
-                <span class="text-qwen-300 text-sm font-medium">Qwen3 30B-A3B</span>
-                <span class="bg-purple-500/20 text-purple-300 text-xs px-2 py-1 rounded-full">Validator</span>
+                <div class="w-2 h-2 bg-purple-400 rounded-full animate-pulse"></div>
+                <span class="text-purple-300 text-sm font-medium">Qwen3 30B-A3B</span>
+                <span class="bg-purple-500/20 text-purple-300 text-xs px-2 py-1 rounded-full">Secondary</span>
               </div>
+              <span class="text-purple-400 text-xs bg-purple-900/30 px-2 py-1 rounded-full">Validation & Critique</span>
             </div>
-            <div class="text-qwen-200 text-xs">Critical review & iterative improvement</div>
           </div>
         </div>
-        
-        <!-- Process Flow Indicator -->
-        <div class="mt-4 bg-dark-700/50 rounded-lg p-3">
-          <div class="text-xs font-medium text-gray-400 mb-2">Intelligence Flow</div>
-          <div class="flex items-center justify-between">
-            <div class="progress-step text-center">
-              <div class="w-8 h-8 bg-deepseek-600 rounded-full flex items-center justify-center text-xs text-white mb-1">1</div>
-              <span class="text-xs text-gray-400">Analyze</span>
+        <div class="bg-gradient-to-r from-green-900/20 to-emerald-900/20 border border-green-500/30 rounded-lg p-3">
+          <div class="flex items-center justify-between mb-2">
+            <div class="flex items-center gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+              <span class="text-green-300 text-sm font-medium">RCI Active</span>
             </div>
-            <div class="flex-1 h-0.5 bg-gray-600 mx-2"></div>
-            <div class="progress-step text-center">
-              <div class="w-8 h-8 bg-deepseek-600 rounded-full flex items-center justify-center text-xs text-white mb-1">2</div>
-              <span class="text-xs text-gray-400">CoD</span>
-            </div>
-            <div class="flex-1 h-0.5 bg-gray-600 mx-2"></div>
-            <div class="progress-step text-center">
-              <div class="w-8 h-8 bg-qwen-600 rounded-full flex items-center justify-center text-xs text-white mb-1">3</div>
-              <span class="text-xs text-gray-400">Critique</span>
-            </div>
-            <div class="flex-1 h-0.5 bg-gray-600 mx-2"></div>
-            <div class="progress-step text-center">
-              <div class="w-8 h-8 bg-green-600 rounded-full flex items-center justify-center text-xs text-white mb-1">✓</div>
-              <span class="text-xs text-gray-400">Perfect</span>
-            </div>
+            <span class="text-green-400 text-xs bg-green-900/30 px-2 py-1 rounded-full">Refinement Loop</span>
           </div>
+          <div class="text-green-200 text-xs">Analysis → Code → Critique → Refinement</div>
         </div>
       </div>
 
-      <!-- Chain of Draft Info -->
-      <div class="p-4 border-b border-dark-600/50">
-        <div class="bg-gradient-to-r from-cyan-900/20 to-teal-900/20 border border-cyan-500/30 rounded-lg p-3">
-          <div class="flex items-center gap-2 mb-2">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-            </svg>
-            <span class="text-cyan-300 text-sm font-medium">Chain of Draft Active</span>
-          </div>
-          <div class="text-cyan-200 text-xs space-y-1">
-            <p>• 5 words max per reasoning step</p>
-            <p>• 92% fewer tokens than CoT</p>
-            <p>• Maintains or improves accuracy</p>
-            <p>• Human-inspired minimal drafting</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Sessions List -->
+      <!-- Threads Section -->
       <div class="flex-1 p-4">
         <div class="flex items-center justify-between mb-3">
-          <h3 class="text-sm font-medium text-gray-300 uppercase tracking-wider">Intelligence Sessions</h3>
-          <span id="threadCount" class="text-xs bg-dark-600 text-gray-400 px-2 py-1 rounded-full">1</span>
+          <h3 class="text-sm font-medium text-gray-300 uppercase tracking-wider">Recent Sessions</h3>
+          <span id="threadCount" class="text-xs bg-dark-600 text-gray-400 px-2 py-1 rounded-full">0</span>
         </div>
-        <ul id="threadList" class="space-y-2">
-          <!-- Sessions will be populated here -->
-        </ul>
+        <ul id="threadList" class="space-y-2 mb-6"></ul>
       </div>
 
-      <!-- Actions -->
-      <div class="p-4 border-t border-dark-600/50">
-        <div class="space-y-2">
-          <button id="downloadCodeBtn" class="w-full bg-dark-600 hover:bg-dark-500 text-gray-300 py-2.5 px-4 rounded-lg transition-all duration-200 flex items-center gap-3 border border-dark-500 hover:border-gray-500">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"></path>
-            </svg>
-            <span class="text-sm">Download Final Code</span>
+      <!-- Export & Actions Section -->
+      <div class="p-4 border-t border-dark-600/50 space-y-3">
+        <div class="grid grid-cols-2 gap-2 mb-4">
+          <button id="downloadCodeBtn" class="bg-dark-600 hover:bg-dark-500 text-gray-300 hover:text-white py-3 px-3 rounded-lg transition-all duration-200 flex flex-col items-center gap-1 border border-dark-500 hover:border-gray-500">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
+            <span class="text-xs font-medium">Code Only</span>
           </button>
-          <button id="clearThreadBtn" class="w-full bg-dark-600 hover:bg-dark-500 text-gray-300 py-2.5 px-4 rounded-lg transition-all duration-200 flex items-center gap-3 border border-dark-500 hover:border-gray-500">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-            </svg>
-            <span class="text-sm">Clear Session</span>
+          <button id="downloadFullBtn" class="bg-dark-600 hover:bg-dark-500 text-gray-300 hover:text-white py-3 px-3 rounded-lg transition-all duration-200 flex flex-col items-center gap-1 border border-dark-500 hover:border-gray-500">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+            <span class="text-xs font-medium">Full Analysis</span>
           </button>
         </div>
+        <button id="clearThreadBtn" class="w-full bg-dark-600 hover:bg-dark-500 text-gray-300 hover:text-white py-2.5 px-4 rounded-lg transition-all duration-200 flex items-center gap-3 border border-dark-500 hover:border-gray-500">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+            <span class="text-sm">Clear Session</span>
+        </button>
       </div>
     </div>
 
     <!-- Main Content Area -->
     <div class="flex-1 flex flex-col overflow-hidden">
-      <!-- Header -->
       <header class="bg-dark-700 border-b border-dark-600 h-16 flex items-center justify-between px-4 md:px-6">
-        <h1 class="text-xl font-semibold">RCI Engine V2 - Chain of Draft Intelligence</h1>
+        <h1 class="text-xl font-semibold">Reflexive Code Intelligence</h1>
         <div class="flex items-center gap-3">
-          <div id="iterationCounter" class="bg-dark-600 text-sm px-3 py-1.5 rounded-lg flex items-center gap-2 hidden">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-yellow-400 animate-spin" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
-            </svg>
-            <span>Iteration <span id="iterationNumber">1</span></span>
-          </div>
-          <div id="currentModelDisplay" class="bg-dark-600 text-sm px-3 py-1.5 rounded-lg flex items-center gap-2">
-            <div class="w-2 h-2 bg-gradient-to-r from-deepseek-400 to-qwen-400 rounded-full animate-pulse"></div>
-            <span id="modelDisplayText">Dual Model CoD</span>
+          <div class="bg-dark-600 text-sm px-3 py-1.5 rounded-lg flex items-center gap-2">
+            <div class="w-2 h-2 bg-gradient-to-r from-deepseek-400 to-purple-400 rounded-full animate-pulse"></div>
+            <span>Dual Model RCI</span>
+            <span class="bg-green-500/20 text-green-300 text-xs px-2 py-1 rounded-full">DeepSeek + Qwen</span>
           </div>
           <button id="openSettings" class="flex items-center gap-1.5 bg-dark-600 hover:bg-dark-500 text-gray-300 px-3 py-1.5 rounded-lg transition">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-            </svg>
+            <span>Settings</span>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
           </button>
         </div>
       </header>
 
-      <!-- Progress Bar -->
-      <div id="progressContainer" class="bg-dark-600 h-2 overflow-hidden hidden">
-        <div id="progressBar" class="h-full w-0 bg-gradient-to-r from-deepseek-500 to-qwen-500 transition-all duration-300"></div>
-      </div>
-
-      <!-- Chat Messages Area -->
+      <div id="progressContainer" class="bg-dark-600 h-2 overflow-hidden hidden"><div id="progressBar" class="progress-bar h-full w-0"></div></div>
       <div id="chatMessages" class="flex-1 overflow-y-auto p-4 space-y-6"></div>
 
-      <!-- Input Area -->
       <div class="p-4 border-t border-dark-600 bg-dark-700">
         <div class="flex items-start gap-3 rounded-xl bg-dark-600 p-3 shadow-lg border border-dark-500 focus-within:border-deepseek-500 transition">
           <div class="flex-1">
-            <textarea id="userInput" rows="1" class="w-full bg-dark-700 text-gray-100 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-deepseek-500 resize-none text-base font-mono" placeholder="Describe what you need - I'll analyze with Chain of Draft and iterate until perfect..."></textarea>
+            <textarea id="userInput" rows="1" class="w-full bg-transparent text-gray-100 focus:outline-none resize-none text-base font-mono" placeholder="Describe your coding challenge..."></textarea>
           </div>
-          <div class="flex flex-col gap-2 mt-1">
-            <button id="sendBtn" class="bg-gradient-to-r from-deepseek-500 to-qwen-500 hover:from-deepseek-600 hover:to-qwen-600 text-white p-3 rounded-lg transition shadow-lg">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"></path>
-              </svg>
-            </button>
-          </div>
+          <button id="sendBtn" class="deepseek-gradient hover:from-deepseek-600 hover:to-deepseek-700 text-white p-3 rounded-lg transition deepseek-glow">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"></path></svg>
+          </button>
         </div>
       </div>
     </div>
@@ -395,176 +196,51 @@
   <div id="settingsModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 hidden">
     <div class="bg-dark-700 rounded-xl shadow-2xl max-w-5xl w-full mx-4 max-h-[90vh] overflow-y-auto">
       <div class="p-5 border-b border-dark-600 flex justify-between items-center">
-        <h2 class="text-xl font-semibold">RCI Engine Configuration</h2>
-        <button id="closeModalX" class="text-gray-400 hover:text-white">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-          </svg>
-        </button>
+        <h2 class="text-xl font-semibold">Reflexive Code Intelligence Configuration</h2>
+        <button id="closeModalX" class="text-gray-400 hover:text-white"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
       </div>
-      
       <div class="p-5">
-        <!-- Tab Navigation -->
         <div class="bg-dark-600 rounded-lg p-1 flex mb-5 overflow-x-auto">
-          <button class="tab-btn flex-shrink-0 py-2 px-4 rounded-md text-white bg-deepseek-500" data-tab="modelTab">🤖 Models</button>
-          <button class="tab-btn flex-shrink-0 py-2 px-4 rounded-md text-gray-400 transition" data-tab="codTab">⚡ Chain of Draft</button>
-          <button class="tab-btn flex-shrink-0 py-2 px-4 rounded-md text-gray-400 transition" data-tab="iterationTab">🔄 Iteration</button>
+          <button class="tab-btn flex-shrink-0 py-2 px-4 rounded-md text-white bg-deepseek-500" data-tab="modelTab">🤖 Models & Workflow</button>
           <button class="tab-btn flex-shrink-0 py-2 px-4 rounded-md text-gray-400 transition" data-tab="parametersTab">⚙️ Parameters</button>
         </div>
-        
-        <!-- Model Selection Tab -->
         <div id="modelTab" class="tab-content">
-          <h3 class="text-lg font-medium mb-4 pb-2 border-b border-dark-600">Dual Model Configuration</h3>
-          
-          <!-- DeepSeek Model Info -->
-          <div class="mb-6">
-            <h4 class="text-sm font-medium text-gray-300 mb-3">Primary Model - Analysis & Generation</h4>
-            <div class="bg-gradient-to-r from-deepseek-900/20 to-blue-900/20 border border-deepseek-500/30 rounded-lg p-4">
-              <div class="flex items-center text-deepseek-300 text-sm font-medium mb-2">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                </svg>
-                DeepSeek V3-0324
-                <span class="bg-deepseek-600/20 text-deepseek-300 text-xs px-2 py-1 rounded-full ml-2">PRIMARY</span>
-              </div>
-              <div class="text-deepseek-100 text-xs space-y-1">
-                <p>• Analyzes prompt intent (code vs. casual conversation)</p>
-                <p>• Uses Chain of Draft for minimal reasoning (5 words/step)</p>
-                <p>• Generates complete code solutions based on CoD analysis</p>
-                <p>• 92% token reduction compared to traditional CoT</p>
-              </div>
+          <h3 class="text-lg font-medium mb-4 pb-2 border-b border-dark-600">Dual Model Refinement Workflow</h3>
+          <div class="bg-gradient-to-r from-purple-900/20 to-blue-900/20 border border-purple-500/30 rounded-lg p-4 mb-6">
+            <div class="flex items-center text-purple-300 text-sm font-medium mb-3">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path></svg>
+              RCI Refinement Workflow
             </div>
-          </div>
-          
-          <!-- Qwen Model Info -->
-          <div class="mb-6">
-            <h4 class="text-sm font-medium text-gray-300 mb-3">Secondary Model - Validation & Critique</h4>
-            <div class="bg-gradient-to-r from-qwen-900/20 to-purple-900/20 border border-qwen-500/30 rounded-lg p-4">
-              <div class="flex items-center text-qwen-300 text-sm font-medium mb-2">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
-                </svg>
-                Qwen3 30B-A3B
-                <span class="bg-qwen-600/20 text-qwen-300 text-xs px-2 py-1 rounded-full ml-2">VALIDATOR</span>
-              </div>
-              <div class="text-qwen-100 text-xs space-y-1">
-                <p>• Reviews DeepSeek's code for issues and improvements</p>
-                <p>• Provides critical analysis and suggestions</p>
-                <p>• Implements updated code with improvements</p>
-                <p>• Continues iterations until perfection is achieved</p>
-              </div>
+            <div class="text-purple-100 text-xs space-y-2">
+              <p><span class="bg-purple-800/30 px-2 py-1 rounded mr-2">1</span><strong>Input Classification:</strong> DeepSeek determines if the prompt is a coding task or conversation.</p>
+              <p><span class="bg-purple-800/30 px-2 py-1 rounded mr-2">2</span><strong>Analysis & Initial Code:</strong> DeepSeek analyzes the request, identifies risks, and generates the first version.</p>
+              <p><span class="bg-purple-800/30 px-2 py-1 rounded mr-2">3</span><strong>Critique & Validation:</strong> Qwen3 reviews the code and analysis, providing expert critique.</p>
+              <p><span class="bg-purple-800/30 px-2 py-1 rounded mr-2">4</span><strong>Refinement & Final Code:</strong> DeepSeek implements the feedback to produce a final, enhanced solution.</p>
             </div>
           </div>
         </div>
-        
-        <!-- Chain of Draft Tab -->
-        <div id="codTab" class="tab-content hidden">
-          <h3 class="text-lg font-medium mb-4 pb-2 border-b border-dark-600">Chain of Draft Configuration</h3>
-          
-          <!-- CoD Explanation -->
-          <div class="bg-gradient-to-r from-cyan-900/20 to-teal-900/20 border border-cyan-500/30 rounded-lg p-4 mb-6">
-            <div class="flex items-center text-cyan-300 text-sm font-medium mb-3">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-              </svg>
-              Chain of Draft Methodology
-            </div>
-            <div class="text-cyan-100 text-xs space-y-2">
-              <p>• Inspired by human problem-solving patterns</p>
-              <p>• Generates minimal intermediate reasoning (5 words max)</p>
-              <p>• Reduces token usage by 68-92% vs Chain of Thought</p>
-              <p>• Maintains or improves accuracy while being faster</p>
-              <p>• No fine-tuning required - just prompt engineering</p>
-            </div>
-          </div>
-          
-          <!-- CoD Settings -->
-          <div class="space-y-4">
-            <div>
-              <label class="block text-sm font-medium text-gray-300 mb-2">Draft Word Limit</label>
-              <input type="number" id="codWordLimit" value="5" min="3" max="10" class="w-full bg-dark-600 text-gray-100 rounded-lg p-3 border border-dark-500 focus:outline-none focus:ring-2 focus:ring-deepseek-500">
-              <p class="text-xs text-gray-500 mt-1">Maximum words per reasoning step (recommended: 5)</p>
-            </div>
-            
-            <div>
-              <label class="flex items-center space-x-3 cursor-pointer">
-                <input type="checkbox" id="enableCoDVisualization" checked class="w-4 h-4 text-deepseek-500 bg-dark-500 border-dark-400 rounded focus:ring-deepseek-500">
-                <span class="text-sm font-medium text-gray-300">Show CoD reasoning steps</span>
-              </label>
-              <p class="text-xs text-gray-500 mt-1">Display minimal draft steps in the interface</p>
-            </div>
-            
-            <div>
-              <label class="flex items-center space-x-3 cursor-pointer">
-                <input type="checkbox" id="strictCoDMode" class="w-4 h-4 text-deepseek-500 bg-dark-500 border-dark-400 rounded focus:ring-deepseek-500">
-                <span class="text-sm font-medium text-gray-300">Strict CoD enforcement</span>
-              </label>
-              <p class="text-xs text-gray-500 mt-1">Force absolute minimal reasoning (may reduce quality)</p>
-            </div>
-          </div>
-        </div>
-        
-        <!-- Iteration Tab -->
-        <div id="iterationTab" class="tab-content hidden">
-          <h3 class="text-lg font-medium mb-4 pb-2 border-b border-dark-600">Iteration Configuration</h3>
-          
-          <!-- Iteration Settings -->
-          <div class="space-y-4">
-            <div>
-              <label class="block text-sm font-medium text-gray-300 mb-2">Maximum Iterations</label>
-              <input type="number" id="maxIterations" value="5" min="1" max="10" class="w-full bg-dark-600 text-gray-100 rounded-lg p-3 border border-dark-500 focus:outline-none focus:ring-2 focus:ring-qwen-500">
-              <p class="text-xs text-gray-500 mt-1">Maximum DeepSeek-Qwen cycles before stopping</p>
-            </div>
-            
-            <div>
-              <label class="block text-sm font-medium text-gray-300 mb-2">Convergence Threshold</label>
-              <select id="convergenceThreshold" class="w-full bg-dark-600 text-gray-100 rounded-lg p-3 border border-dark-500 focus:outline-none focus:ring-2 focus:ring-qwen-500">
-                <option value="high">High - Stop when no major issues found</option>
-                <option value="medium" selected>Medium - Stop when only minor issues remain</option>
-                <option value="low">Low - Continue until absolutely perfect</option>
-              </select>
-            </div>
-            
-            <div>
-              <label class="flex items-center space-x-3 cursor-pointer">
-                <input type="checkbox" id="showDiffView" checked class="w-4 h-4 text-qwen-500 bg-dark-500 border-dark-400 rounded focus:ring-qwen-500">
-                <span class="text-sm font-medium text-gray-300">Show code diff between iterations</span>
-              </label>
-              <p class="text-xs text-gray-500 mt-1">Highlight changes made by Qwen in each iteration</p>
-            </div>
-          </div>
-        </div>
-        
-        <!-- Parameters Tab -->
         <div id="parametersTab" class="tab-content hidden">
-          <h3 class="text-lg font-medium mb-4 pb-2 border-b border-dark-600">Model Parameters</h3>
-          
+          <h3 class="text-lg font-medium mb-4 pb-2 border-b border-dark-600">Generation Parameters</h3>
           <div class="mb-4">
             <div class="flex justify-between items-center mb-2">
               <label for="temp" class="block text-sm font-medium text-gray-300">Temperature</label>
               <span id="tempValue" class="text-sm text-gray-400">0.1</span>
             </div>
-            <input type="range" id="temp" min="0" max="1" step="0.01" value="0.1" class="w-full h-2 rounded-lg appearance-none cursor-pointer">
-            <p class="text-xs text-gray-500 mt-1">Lower for more deterministic code, higher for creativity</p>
+            <input type="range" id="temp" min="0" max="1" step="0.01" value="0.1" class="w-full">
+            <p class="text-xs text-gray-500 mt-1">Lower for more deterministic code, higher for creative solutions.</p>
           </div>
-          
           <div class="mb-4">
             <div class="flex justify-between items-center mb-2">
               <label for="maxTokens" class="block text-sm font-medium text-gray-300">Max Tokens</label>
               <span id="maxTokensValue" class="text-sm text-gray-400">16384</span>
             </div>
-            <input type="range" id="maxTokens" min="2048" max="32768" step="1024" value="16384" class="w-full h-2 rounded-lg appearance-none cursor-pointer">
-            <p class="text-xs text-gray-500 mt-1">Maximum response length per model call</p>
+            <input type="range" id="maxTokens" min="1024" max="32768" step="1024" value="16384" class="w-full">
+            <p class="text-xs text-gray-500 mt-1">Maximum length for complex implementations.</p>
           </div>
         </div>
-        
         <div class="flex justify-end gap-3 pt-4 mt-4 border-t border-dark-600">
-          <button id="closeSettings" class="px-4 py-2 bg-dark-600 hover:bg-dark-500 text-gray-300 rounded-lg transition">
-            Cancel
-          </button>
-          <button id="saveSettings" class="px-4 py-2 bg-gradient-to-r from-deepseek-500 to-qwen-500 hover:from-deepseek-600 hover:to-qwen-600 text-white rounded-lg transition">
-            Save Settings
-          </button>
+          <button id="closeSettings" class="px-4 py-2 bg-dark-600 hover:bg-dark-500 text-gray-300 rounded-lg transition">Cancel</button>
+          <button id="saveSettings" class="px-4 py-2 deepseek-gradient hover:from-deepseek-600 hover:to-deepseek-700 text-white rounded-lg transition">Save Settings</button>
         </div>
       </div>
     </div>
@@ -572,574 +248,434 @@
 
   <script>
     /***********************
-     * Enhanced Configuration for RCI V2
+     * Configuration & Prompts
      ***********************/
     const CONFIG = {
-      // Model Configuration
-      primaryModel: "deepseek",      // DeepSeek V3-0324
-      secondaryModel: "qwen",        // Qwen3 30B-A3B
-      
-      // Chain of Draft Settings
-      codWordLimit: 5,              // Max words per reasoning step
-      enableCoDVisualization: true,  // Show CoD steps in UI
-      strictCoDMode: false,         // Strict enforcement
-      
-      // Iteration Settings
-      maxIterations: 5,
-      convergenceThreshold: "medium",
-      showDiffView: true,
-      
-      // Generation Parameters
-      temperature: 0.1,  // Very low for deterministic output
+      primaryModel: "deepseek",
+      secondaryModel: "qwen",
+      temperature: 0.1,
       maxTokens: 16384,
-      top_p: 0.9,
-      top_k: 40
     };
 
-    /*====================================
-     * CHAIN OF DRAFT PROMPTS
-     ===================================*/
-    const COD_PROMPTS = {
-      // Initial analysis prompt for DeepSeek
-      initialAnalysis: () => `You are DeepSeek V3-0324, an advanced AI with Chain of Draft (CoD) capabilities.
-
-CRITICAL FIRST STEP: Analyze the user's input to determine:
-1. Is this a typo, greeting, or casual conversation? → Respond normally as a helpful AI
-2. Is this a code, math, logic, or technical request? → Proceed with Chain of Draft analysis
-
-FOR CASUAL CONVERSATIONS:
-- Respond naturally and helpfully
-- No need for technical analysis
-- Be conversational and friendly
-
-FOR TECHNICAL REQUESTS (code/math/logic):
-Use Chain of Draft methodology:
-
-## CHAIN OF DRAFT INSTRUCTIONS
-Think step by step, but only keep a minimum draft for each thinking step, with ${CONFIG.codWordLimit} words at most.
-
-ANALYSIS FORMAT:
-Draft 1: [5 words max]
-Draft 2: [5 words max]
-Draft 3: [5 words max]
-...
-Draft N: [5 words max]
-
-#### ANALYSIS COMPLETE ####
-
-Based on this minimal drafting, identify:
-- Core requirements
-- Potential issues/errors
-- Key implementation points
-- Critical edge cases
-
-Remember: Be extremely concise in drafts, but comprehensive in final analysis.`,
-
-      // Code generation prompt for DeepSeek
-      codeGeneration: (analysis) => `Based on your Chain of Draft analysis:
-
-${analysis}
-
-Now generate COMPLETE, PRODUCTION-READY code that:
-1. Implements all identified requirements
-2. Prevents all potential errors you identified
-3. Handles all edge cases
-4. Follows best practices
-5. Is well-documented
-
-Generate the full implementation now:`,
-
-      // Critique prompt for Qwen
-      qwenCritique: (code, analysis, iteration) => `You are Qwen3 30B-A3B, an expert code reviewer and validator.
-
-This is iteration ${iteration} of code refinement.
-
-ORIGINAL ANALYSIS (by DeepSeek using Chain of Draft):
-${analysis}
-
-CURRENT CODE IMPLEMENTATION:
-${code}
-
-Your task:
-1. Critically analyze this code for:
-   - Bugs, errors, or potential failures
-   - Missing requirements from the original request
-   - Performance issues or inefficiencies
-   - Security vulnerabilities
-   - Code quality and best practices
-   - Edge cases not properly handled
-
-2. Provide specific, actionable feedback
-
-3. Rate the code quality (1-10) and explain why
-
-Be thorough but constructive. Focus on making the code perfect.`,
-
-      // Implementation prompt for Qwen
-      qwenImplementation: (originalCode, critique) => `Based on your critique:
-
-${critique}
-
-Now provide an IMPROVED implementation that addresses ALL identified issues.
-
-ORIGINAL CODE:
-${originalCode}
-
-Generate the complete updated code with all improvements:`,
-
-      // Convergence check
-      convergenceCheck: (critique) => `Based on this critique:
-
-${critique}
-
-Determine if the code has reached acceptable quality:
-- HIGH threshold: No major issues (respond: CONVERGED or CONTINUE)
-- MEDIUM threshold: Only minor issues (respond: CONVERGED or CONTINUE)
-- LOW threshold: Absolutely perfect (respond: CONVERGED or CONTINUE)
-
-Current threshold: ${CONFIG.convergenceThreshold.toUpperCase()}
-
-Respond with only: CONVERGED or CONTINUE`
+    const RCI_PROMPTS = {
+      classifyInput: (userInput) => `You are an expert in classifying user requests. Analyze the following input and determine its category. Your response MUST be a single JSON object with one key, "category", and the value being either "Casual Conversation" or "Coding Request". Do not add any other text.\n\nUser Input: "${userInput}"`,
+      analysisAndCode: () => `You are DeepSeek Coder, running the REFLEXIVE CODE INTELLIGENCE (RCI) Engine.\n## STAGE 1: DEEP ANALYSIS & INITIAL CODE GENERATION\n**Task**: Perform a comprehensive analysis of the user's request, identify potential errors, and generate a complete, production-ready initial code solution.\n\n### 1. 📋 REQUIREMENTS ANALYSIS\n- **Core Functionality**: What exactly needs to be built?\n- **Technical Requirements**: Performance, scalability, security needs.\n- **Edge Cases**: Identify potential edge cases (empty inputs, null values, boundary conditions).\n\n### 2. ⚠️ ERROR IDENTIFICATION & PREVENTION STRATEGY\n- **Logic Errors**: Incorrect algorithms, off-by-one errors.\n- **Security Vulnerabilities**: Input validation failures, data exposure risks.\n- **Performance Issues**: Inefficient algorithms, memory leaks.\n- For each potential error, briefly describe a prevention strategy.\n\n### 3. 💻 INITIAL CODE IMPLEMENTATION\n- Generate a complete, well-structured, and production-ready code solution.\n- The code must be clean, readable, and include comprehensive input validation and error handling.\n- Add clear comments and documentation for usage. Include unit tests if applicable.\n\n**Format your response clearly with the above three sections.**`,
+      critiqueCode: (userInput, deepseekAnalysisAndCode) => `You are Qwen3 30B-A3B, an expert senior software architect. Your task is to provide a critical review of a solution generated by another AI model. Your critique should be constructive and insightful.\n\n**Original User Request:**\n\`\`\`\n${userInput}\n\`\`\`\n\n**DeepSeek's Analysis and Initial Code:**\n\`\`\`\n${deepseekAnalysisAndCode}\n\`\`\`\n---\n## YOUR CRITICAL REVIEW\n\n### 1. ✅ POSITIVE FEEDBACK\n- Acknowledge what the initial solution does well.\n\n### 2. 🚨 IDENTIFIED WEAKNESSES & POTENTIAL ISSUES\n- **Critique the Analysis:** Did the initial analysis miss any requirements, edge cases, or potential pitfalls?\n- **Critique the Code:** Identify any subtle bugs, logic flaws, robustness issues, security vulnerabilities, performance bottlenecks, or deviations from best practices.\n\n### 3. 🔧 SPECIFIC, ACTIONABLE RECOMMENDATIONS\n- For each weakness, provide a clear recommendation for improvement. Suggest alternative approaches or code snippets for correction.`,
+      refineCode: (userInput, originalSolution, qwenCritique) => `You are DeepSeek Coder, a master programmer refining your code based on an expert critique from Qwen3. Your goal is to humbly accept the critique and produce a new, superior version of the code.\n\n**Original User Request:**\n\`\`\`\n${userInput}\n\`\`\`\n\n**Your Initial Analysis and Code:**\n\`\`\`\n${originalSolution}\n\`\`\`\n\n**Expert Critique from Qwen3:**\n\`\`\`\n${qwenCritique}\n\`\`\`\n---\n## YOUR TASK: REFINEMENT & FINAL IMPLEMENTATION\n\n### 1. 📝 ACKNOWLEDGEMENT OF CRITIQUE\n- Briefly summarize the key points from the critique that you will be addressing.\n\n### 2. 💻 REFINED & FINAL IMPLEMENTATION\n- Provide the **complete, final, and updated** code solution that integrates all actionable recommendations.\n- Ensure the final code is robust, secure, efficient, and follows best practices.\n- Present the code as a finished product, ready for production, with updated documentation and tests if necessary.`
     };
 
     /***********************
-     * Thread Management
+     * State Management
      ***********************/
     let threads = [];
     let currentThreadId = null;
     let threadCounter = 1;
+    let isGenerating = false;
+
+    /***********************
+     * DOM Elements
+     ***********************/
+    const chatMessages = document.getElementById("chatMessages");
+    const userInput = document.getElementById("userInput");
+    const sendBtn = document.getElementById("sendBtn");
+    const progressContainer = document.getElementById('progressContainer');
+    const progressBar = document.getElementById('progressBar');
+
+    /***********************
+     * RCI Workflow & API Communication
+     ***********************/
+    async function processWithRCI(userMessage) {
+      if (isGenerating) return;
+      isGenerating = true;
+      sendBtn.disabled = true;
+      userInput.disabled = true;
+
+      const thread = threads.find(t => t.id === currentThreadId);
+      if (!thread) return;
+
+      addMessageToThread(thread, 'user', userMessage);
+      renderUserMessage(userMessage);
+      
+      showProgressBar();
+
+      try {
+        updateProgress(5);
+        const classificationResponse = await callAPI(RCI_PROMPTS.classifyInput(userMessage), CONFIG.primaryModel);
+        let classification = { category: 'Coding Request' };
+        try {
+          classification = JSON.parse(classificationResponse);
+        } catch (e) { console.error("Failed to parse classification JSON:", e); }
+
+        if (classification.category === 'Casual Conversation') {
+          const conversationalResponse = "It looks like you're starting a conversation. As a specialized coding assistant, I'm here to help you with any programming challenges. What can I help you build today?";
+          const msgData = { type: 'conversation', modelUsed: CONFIG.primaryModel };
+          addMessageToThread(thread, 'assistant', conversationalResponse, msgData);
+          appendAssistantMessage(conversationalResponse, msgData);
+          updateProgress(100);
+          return;
+        }
+
+        updateProgress(10);
+        const initialSolution = await runStage1(userMessage, thread);
+        
+        updateProgress(40);
+        const critique = await runStage2(userMessage, initialSolution, thread);
+
+        updateProgress(70);
+        await runStage3(userMessage, initialSolution, critique, thread);
+
+        updateProgress(100);
+
+      } catch (error) {
+        console.error('RCI Processing Error:', error);
+        showNotification('Error during RCI processing: ' + error.message, 'error');
+        const errorMessage = `An error occurred: ${error.message}`;
+        addMessageToThread(thread, 'assistant', errorMessage, { type: 'error' });
+        appendAssistantMessage(errorMessage, { type: 'error' });
+      } finally {
+        isGenerating = false;
+        sendBtn.disabled = false;
+        userInput.disabled = false;
+        userInput.focus();
+        hideProgressBar();
+      }
+    }
+
+    async function runStage1(userMessage, thread) {
+      const messageData = { type: 'rci-analysis-code', modelUsed: CONFIG.primaryModel };
+      const messageElem = appendAssistantMessage('', messageData, true);
+      const fullResponse = await streamAPIResponse(RCI_PROMPTS.analysisAndCode(), CONFIG.primaryModel, messageElem.querySelector('.content-container'), [{ role: 'user', content: userMessage }]);
+      addMessageToThread(thread, 'assistant', fullResponse, messageData);
+      extractCodeBlocks(fullResponse, thread);
+      return fullResponse;
+    }
+
+    async function runStage2(userMessage, initialSolution, thread) {
+      const messageData = { type: 'rci-critique', modelUsed: CONFIG.secondaryModel };
+      const messageElem = appendAssistantMessage('', messageData, true);
+      const fullResponse = await streamAPIResponse(RCI_PROMPTS.critiqueCode(userMessage, initialSolution), CONFIG.secondaryModel, messageElem.querySelector('.content-container'));
+      addMessageToThread(thread, 'assistant', fullResponse, messageData);
+      return fullResponse;
+    }
+
+    async function runStage3(userMessage, initialSolution, critique, thread) {
+      const messageData = { type: 'rci-refined-code', modelUsed: CONFIG.primaryModel };
+      const messageElem = appendAssistantMessage('', messageData, true);
+      const fullResponse = await streamAPIResponse(RCI_PROMPTS.refineCode(userMessage, initialSolution, critique), CONFIG.primaryModel, messageElem.querySelector('.content-container'));
+      addMessageToThread(thread, 'assistant', fullResponse, messageData);
+      extractCodeBlocks(fullResponse, thread);
+      return fullResponse;
+    }
+
+    async function callAPI(systemPrompt, model, messages = []) {
+        const response = await fetch('/api/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                messages: [{ role: 'system', content: systemPrompt }, ...messages],
+                model: model,
+                stream: false,
+                temperature: CONFIG.temperature,
+                max_tokens: CONFIG.maxTokens,
+            })
+        });
+        if (!response.ok) throw new Error(`API Error: ${response.statusText}`);
+        const data = await response.json();
+        return data.choices[0].message.content;
+    }
+
+    async function streamAPIResponse(systemPrompt, model, targetElement, messages = []) {
+        let fullContent = "";
+        targetElement.innerHTML = '<span class="blinking-cursor">|</span>';
+
+        const response = await fetch('/api/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                messages: [{ role: 'system', content: systemPrompt }, ...messages],
+                model: model,
+                stream: true,
+                temperature: CONFIG.temperature,
+                max_tokens: CONFIG.maxTokens,
+            })
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            targetElement.innerHTML = `<p class="text-red-400">Error: ${errorText}</p>`;
+            throw new Error(`API request failed: ${response.statusText}`);
+        }
+
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = '';
+
+        while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+
+            buffer += decoder.decode(value, { stream: true });
+            const lines = buffer.split('\n');
+            buffer = lines.pop();
+
+            for (const line of lines) {
+                if (line.startsWith('data: ')) {
+                    const jsonStr = line.substring(6);
+                    if (jsonStr === '[DONE]') break;
+                    try {
+                        const chunk = JSON.parse(jsonStr);
+                        if (chunk.choices && chunk.choices[0].delta.content) {
+                            fullContent += chunk.choices[0].delta.content;
+                            targetElement.innerHTML = marked.parse(fullContent + '<span class="blinking-cursor">|</span>');
+                            chatMessages.scrollTop = chatMessages.scrollHeight;
+                        }
+                    } catch (e) { /* Ignore parsing errors for incomplete chunks */ }
+                }
+            }
+        }
+        
+        targetElement.innerHTML = marked.parse(fullContent);
+        targetElement.querySelectorAll('pre code').forEach((block) => {
+            hljs.highlightElement(block);
+        });
+
+        return fullContent;
+    }
+
+    /***********************
+     * UI & Message Rendering
+     ***********************/
+    function renderUserMessage(content) {
+        const messageDiv = document.createElement("div");
+        messageDiv.className = "message-container flex justify-end";
+        messageDiv.innerHTML = `
+            <div class="bg-deepseek-600 text-white rounded-2xl px-4 py-3 max-w-[80%] shadow-lg">
+                <div class="text-sm font-medium mb-1">You</div>
+                <div class="text-gray-100">${escapeHtml(content)}</div>
+                <div class="text-xs text-deepseek-200 mt-2 opacity-70">${formatTime(new Date())}</div>
+            </div>`;
+        chatMessages.appendChild(messageDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    function appendAssistantMessage(content, messageData, isStreaming = false) {
+        const messageDiv = document.createElement("div");
+        messageDiv.className = "message-container flex justify-start";
+        const stageInfo = getStageInfo(messageData.type);
+
+        messageDiv.innerHTML = `
+            <div class="max-w-[95%] w-full">
+                <div class="stage-header mb-3 flex items-center gap-3 text-sm text-gray-400">
+                    <div class="stage-indicator w-3 h-3 ${stageInfo.color} rounded-full"></div>
+                    <span class="font-medium">${stageInfo.title} (${messageData.modelUsed.toUpperCase()})</span>
+                    <div class="flex-1 h-px bg-dark-600"></div>
+                </div>
+                <div class="rci-stage ${stageInfo.className} rounded-lg p-4">
+                    <div class="text-gray-100 text-sm content-container prose prose-invert max-w-none prose-pre:bg-dark-800 prose-pre:p-0">
+                        ${isStreaming ? '<span class="blinking-cursor">|</span>' : marked.parse(content)}
+                    </div>
+                </div>
+                <div class="text-xs text-gray-500 mt-3">${formatTime(new Date())}</div>
+            </div>`;
+        
+        chatMessages.appendChild(messageDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+
+        if (!isStreaming) {
+            messageDiv.querySelectorAll('pre code').forEach(block => hljs.highlightElement(block));
+        }
+        return messageDiv;
+    }
+
+    function getStageInfo(type) {
+        const stages = {
+            'rci-analysis-code': { title: 'Analysis & Initial Code', className: 'code-analysis', color: 'bg-green-400' },
+            'rci-critique': { title: 'Expert Critique', className: 'error-prevention', color: 'bg-orange-400' },
+            'rci-refined-code': { title: 'Refinement & Final Code', className: 'best-practice', color: 'bg-purple-400' },
+            'conversation': { title: 'Conversational Response', className: 'bg-blue-900/20 border border-blue-500/30', color: 'bg-blue-400' },
+            'error': { title: 'Error', className: 'error-prevention', color: 'bg-red-500' }
+        };
+        return stages[type] || { title: 'Response', className: 'bg-dark-600', color: 'bg-gray-400' };
+    }
+
+    /***********************
+     * Settings Modal Logic
+     ***********************/
+    function setupTabNavigation() {
+      const tabButtons = document.querySelectorAll('.tab-btn');
+      tabButtons.forEach(button => {
+        button.addEventListener('click', () => {
+          tabButtons.forEach(btn => btn.classList.remove('bg-deepseek-500', 'text-white'));
+          document.querySelectorAll('.tab-content').forEach(content => content.classList.add('hidden'));
+          button.classList.add('bg-deepseek-500', 'text-white');
+          document.getElementById(button.dataset.tab).classList.remove('hidden');
+        });
+      });
+    }
+    
+    function setupSliders() {
+      document.querySelectorAll('input[type="range"]').forEach(slider => {
+        const valueDisplay = document.getElementById(`${slider.id}Value`);
+        const update = () => {
+            if(valueDisplay) valueDisplay.textContent = slider.value;
+            const percent = ((slider.value - slider.min) / (slider.max - slider.min)) * 100;
+            slider.style.setProperty('--value-percent', `${percent}%`);
+        };
+        slider.addEventListener('input', update);
+        update();
+      });
+    }
+
+    function openSettingsModal() {
+      setSliderAndValue("temp", CONFIG.temperature);
+      setSliderAndValue("maxTokens", CONFIG.maxTokens);
+      document.getElementById("settingsModal").style.display = "flex";
+    }
+
+    function closeSettingsModal() {
+      document.getElementById("settingsModal").style.display = "none";
+    }
+    
+    function saveSettings() {
+      CONFIG.temperature = parseFloat(document.getElementById("temp").value);
+      CONFIG.maxTokens = parseInt(document.getElementById("maxTokens").value);
+      localStorage.setItem("rciConfig", JSON.stringify(CONFIG));
+      closeSettingsModal();
+      showNotification("Settings saved");
+    }
+
+    function setSliderAndValue(id, value) {
+      const slider = document.getElementById(id);
+      if (slider) {
+        slider.value = value;
+        slider.dispatchEvent(new Event('input'));
+      }
+    }
+
+    /***********************
+     * Thread & Utility Functions
+     ***********************/
+    function addMessageToThread(thread, sender, content, metadata = {}) {
+        thread.messages.push({ id: Date.now(), sender, content, timestamp: new Date().toISOString(), ...metadata });
+    }
+
+    function extractCodeBlocks(content, thread) {
+        const codeBlockRegex = /```(\w+)?\n([\s\S]*?)```/g;
+        let match;
+        while ((match = codeBlockRegex.exec(content)) !== null) {
+            if (match[2].trim().length > 10) {
+                thread.codeBlocks.push({ language: match[1] || 'text', code: match[2].trim() });
+            }
+        }
+    }
     
     function createNewThread() {
-      const newThread = {
-        id: Date.now(),
-        name: `Intelligence Session ${threadCounter++}`,
-        messages: [],
-        codeVersions: [],
-        currentIteration: 0,
-        metadata: {
-          created: new Date().toISOString(),
-          primaryModel: CONFIG.primaryModel,
-          secondaryModel: CONFIG.secondaryModel
-        }
-      };
+      const newThread = { id: Date.now(), name: `Coding Session ${threadCounter++}`, messages: [], codeBlocks: [], metadata: { created: new Date().toISOString() } };
       threads.push(newThread);
       currentThreadId = newThread.id;
       updateThreadList();
-      renderCurrentThreadMessages();
-      showNotification("New intelligence session created");
+      chatMessages.innerHTML = "";
+      showNotification("New coding session created");
     }
     
     function updateThreadList() {
       const threadList = document.getElementById("threadList");
-      if (threadList) {
-        threadList.innerHTML = "";
-        threads.forEach(thread => {
-          const li = document.createElement("li");
-          li.className = "px-4 py-3 rounded-xl cursor-pointer hover:bg-dark-600 transition-all duration-200 border border-dark-500/50";
-          
-          if (thread.id === currentThreadId) {
-            li.classList.add("bg-dark-600/50", "border-deepseek-500/50");
-          } else {
-            li.classList.add("hover:border-deepseek-500/50");
-          }
-          
-          li.innerHTML = `
-            <div class="flex items-center gap-3">
-              <div class="w-8 h-8 bg-gradient-to-br from-deepseek-500/20 to-qwen-500/20 rounded-lg flex items-center justify-center">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-deepseek-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
-                </svg>
-              </div>
-              <div class="flex-1 min-w-0">
-                <p class="text-sm font-medium text-white truncate">${thread.name}</p>
-                <p class="text-xs text-gray-400">${formatTimeAgo(thread.metadata.created)}</p>
-              </div>
-              ${thread.currentIteration > 0 ? `
-                <div class="text-xs bg-qwen-600/20 text-qwen-300 px-2 py-1 rounded-full">
-                  ${thread.currentIteration} iter
-                </div>
-              ` : ''}
-            </div>
-          `;
-          
-          li.addEventListener("click", () => {
+      threadList.innerHTML = "";
+      threads.forEach(thread => {
+        const li = document.createElement("li");
+        li.className = `px-4 py-3 rounded-xl cursor-pointer hover:bg-dark-600 transition-all duration-200 border border-dark-500/50 ${thread.id === currentThreadId ? 'bg-dark-600/50 text-deepseek-300 border-deepseek-500/50' : 'text-gray-300'}`;
+        li.innerHTML = `<div class="flex items-center gap-3"><div class="w-8 h-8 bg-deepseek-500/20 rounded-lg flex items-center justify-center"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-deepseek-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg></div><div class="flex-1 min-w-0"><p class="text-sm font-medium text-white truncate">${thread.name}</p><p class="text-xs text-gray-400">${formatTimeAgo(thread.metadata.created)}</p></div></div>`;
+        li.addEventListener("click", () => {
             currentThreadId = thread.id;
-            renderCurrentThreadMessages();
+            renderFullThread();
             updateThreadList();
-          });
-          threadList.appendChild(li);
         });
-      }
-      
-      const threadCountEl = document.getElementById("threadCount");
-      if (threadCountEl) {
-        threadCountEl.textContent = threads.length;
-      }
-    }
-
-    function formatTimeAgo(timestamp) {
-      const now = new Date();
-      const then = new Date(timestamp);
-      const diffMs = now - then;
-      const diffMins = Math.floor(diffMs / 60000);
-      
-      if (diffMins < 1) return 'Just now';
-      if (diffMins < 60) return `${diffMins}m ago`;
-      
-      const diffHours = Math.floor(diffMins / 60);
-      if (diffHours < 24) return `${diffHours}h ago`;
-      
-      const diffDays = Math.floor(diffHours / 24);
-      return `${diffDays}d ago`;
-    }
-
-    /***********************
-     * RCI V2 Process Implementation
-     ***********************/
-    async function processWithRCIV2(userMessage) {
-      const thread = threads.find(t => t.id === currentThreadId);
-      if (!thread) return;
-
-      // Add user message
-      thread.messages.push({
-        id: Date.now(),
-        sender: 'user',
-        content: userMessage,
-        timestamp: new Date().toISOString()
+        threadList.appendChild(li);
       });
-
-      renderCurrentThreadMessages();
-      showProgressBar();
-
-      try {
-        // Step 1: Initial analysis by DeepSeek
-        updateProgress(10);
-        const analysisResponse = await callDeepSeekAPI([
-          { role: 'system', content: COD_PROMPTS.initialAnalysis() },
-          { role: 'user', content: userMessage }
-        ]);
-
-        // Check if this is a casual conversation or technical request
-        const isCasualConversation = !analysisResponse.includes("#### ANALYSIS COMPLETE ####");
-        
-        if (isCasualConversation) {
-          // Simple response for casual conversation
-          thread.messages.push({
-            id: Date.now(),
-            sender: 'assistant',
-            content: analysisResponse,
-            timestamp: new Date().toISOString(),
-            model: 'deepseek',
-            type: 'casual'
-          });
-          hideProgressBar();
-          renderCurrentThreadMessages();
-          return;
-        }
-
-        // Extract CoD analysis
-        const codAnalysis = analysisResponse.split("#### ANALYSIS COMPLETE ####")[0];
-        const fullAnalysis = analysisResponse.split("#### ANALYSIS COMPLETE ####")[1] || "";
-
-        thread.messages.push({
-          id: Date.now(),
-          sender: 'assistant',
-          content: analysisResponse,
-          timestamp: new Date().toISOString(),
-          model: 'deepseek',
-          type: 'cod-analysis',
-          codSteps: extractCoDSteps(codAnalysis)
-        });
-
-        updateProgress(30);
-        renderCurrentThreadMessages();
-
-        // Step 2: Generate initial code based on CoD analysis
-        const codeResponse = await callDeepSeekAPI([
-          { role: 'system', content: 'You are DeepSeek V3-0324. Generate complete, production-ready code based on the analysis.' },
-          { role: 'user', content: COD_PROMPTS.codeGeneration(fullAnalysis) }
-        ]);
-
-        thread.messages.push({
-          id: Date.now(),
-          sender: 'assistant',
-          content: codeResponse,
-          timestamp: new Date().toISOString(),
-          model: 'deepseek',
-          type: 'code',
-          iteration: 0
-        });
-
-        thread.codeVersions.push({
-          iteration: 0,
-          code: codeResponse,
-          model: 'deepseek'
-        });
-
-        updateProgress(50);
-        renderCurrentThreadMessages();
-
-        // Step 3: Begin iteration cycle
-        let currentCode = codeResponse;
-        let converged = false;
-        thread.currentIteration = 0;
-
-        while (!converged && thread.currentIteration < CONFIG.maxIterations) {
-          thread.currentIteration++;
-          updateIterationCounter(thread.currentIteration);
-          
-          // Qwen critique
-          updateProgress(50 + (thread.currentIteration * 10));
-          const critiqueResponse = await callQwenAPI([
-            { role: 'system', content: 'You are Qwen3 30B-A3B, an expert code reviewer.' },
-            { role: 'user', content: COD_PROMPTS.qwenCritique(currentCode, fullAnalysis, thread.currentIteration) }
-          ]);
-
-          thread.messages.push({
-            id: Date.now(),
-            sender: 'assistant',
-            content: critiqueResponse,
-            timestamp: new Date().toISOString(),
-            model: 'qwen',
-            type: 'critique',
-            iteration: thread.currentIteration
-          });
-
-          renderCurrentThreadMessages();
-
-          // Check convergence
-          const convergenceResponse = await callQwenAPI([
-            { role: 'system', content: 'Respond with only CONVERGED or CONTINUE' },
-            { role: 'user', content: COD_PROMPTS.convergenceCheck(critiqueResponse) }
-          ]);
-
-          if (convergenceResponse.trim().toUpperCase().includes('CONVERGED')) {
-            converged = true;
-            thread.messages.push({
-              id: Date.now(),
-              sender: 'system',
-              content: `✅ Code has reached acceptable quality after ${thread.currentIteration} iteration${thread.currentIteration > 1 ? 's' : ''}!`,
-              timestamp: new Date().toISOString(),
-              type: 'convergence'
-            });
-            break;
-          }
-
-          // Qwen implementation of improvements
-          updateProgress(60 + (thread.currentIteration * 10));
-          const improvedCode = await callQwenAPI([
-            { role: 'system', content: 'You are Qwen3 30B-A3B. Provide improved code implementation.' },
-            { role: 'user', content: COD_PROMPTS.qwenImplementation(currentCode, critiqueResponse) }
-          ]);
-
-          thread.messages.push({
-            id: Date.now(),
-            sender: 'assistant',
-            content: improvedCode,
-            timestamp: new Date().toISOString(),
-            model: 'qwen',
-            type: 'code',
-            iteration: thread.currentIteration
-          });
-
-          thread.codeVersions.push({
-            iteration: thread.currentIteration,
-            code: improvedCode,
-            model: 'qwen'
-          });
-
-          currentCode = improvedCode;
-          renderCurrentThreadMessages();
-        }
-
-        if (!converged) {
-          thread.messages.push({
-            id: Date.now(),
-            sender: 'system',
-            content: `⚠️ Maximum iterations (${CONFIG.maxIterations}) reached. Code may still have room for improvement.`,
-            timestamp: new Date().toISOString(),
-            type: 'max-iterations'
-          });
-        }
-
-        hideIterationCounter();
-        updateProgress(100);
-        setTimeout(hideProgressBar, 1000);
-
-      } catch (error) {
-        console.error('RCI V2 Processing Error:', error);
-        showNotification('Error during processing: ' + error.message);
-        hideProgressBar();
-        hideIterationCounter();
-      }
+      document.getElementById("threadCount").textContent = threads.length;
     }
 
-    function extractCoDSteps(analysis) {
-      const steps = [];
-      const lines = analysis.split('\n');
-      lines.forEach(line => {
-        const draftMatch = line.match(/Draft \d+: (.+)/);
-        if (draftMatch) {
-          steps.push(draftMatch[1].trim());
-        }
-      });
-      return steps;
-    }
-
-    function updateIterationCounter(iteration) {
-      const counter = document.getElementById('iterationCounter');
-      const iterNumber = document.getElementById('iterationNumber');
-      if (counter && iterNumber) {
-        counter.classList.remove('hidden');
-        iterNumber.textContent = iteration;
-      }
-    }
-
-    function hideIterationCounter() {
-      const counter = document.getElementById('iterationCounter');
-      if (counter) {
-        counter.classList.add('hidden');
-      }
-    }
-
-    /***********************
-     * API Calls
-     ***********************/
-    async function callDeepSeekAPI(messages) {
-      try {
-        const response = await fetch('/api/chat', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            messages,
-            model: 'deepseek',
-            temperature: CONFIG.temperature,
-            max_tokens: CONFIG.maxTokens,
-            top_p: CONFIG.top_p,
-            top_k: CONFIG.top_k
-          })
-        });
-
-        if (!response.ok) {
-          const error = await response.json();
-          throw new Error(error.message || 'API request failed');
-        }
-
-        const data = await response.json();
-        return data.choices[0].message.content;
-      } catch (error) {
-        console.error('DeepSeek API Error:', error);
-        throw new Error('Failed to communicate with DeepSeek: ' + error.message);
-      }
-    }
-
-    async function callQwenAPI(messages) {
-      try {
-        const response = await fetch('/api/chat', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            messages,
-            model: 'qwen',
-            temperature: CONFIG.temperature,
-            max_tokens: CONFIG.maxTokens,
-            top_p: CONFIG.top_p,
-            top_k: CONFIG.top_k
-          })
-        });
-
-        if (!response.ok) {
-          const error = await response.json();
-          throw new Error(error.message || 'API request failed');
-        }
-
-        const data = await response.json();
-        return data.choices[0].message.content;
-      } catch (error) {
-        console.error('Qwen API Error:', error);
-        throw new Error('Failed to communicate with Qwen: ' + error.message);
-      }
-    }
-
-    /***********************
-     * Message Rendering
-     ***********************/
-    function renderCurrentThreadMessages() {
-      const chatMessages = document.getElementById("chatMessages");
-      if (!chatMessages) return;
-
-      const thread = threads.find(t => t.id === currentThreadId);
-      if (!thread) {
+    function renderFullThread() {
+        const thread = threads.find(t => t.id === currentThreadId);
         chatMessages.innerHTML = "";
-        return;
-      }
-
-      chatMessages.innerHTML = "";
-      
-      thread.messages.forEach((message, index) => {
-        const messageDiv = document.createElement("div");
-        messageDiv.className = "message-container mb-6 animation-fadeIn";
-        
-        if (message.sender === "user") {
-          messageDiv.innerHTML = `
-            <div class="flex justify-end">
-              <div class="bg-gradient-to-r from-deepseek-600 to-qwen-600 text-white rounded-2xl px-4 py-3 max-w-[80%] shadow-lg">
-                <div class="text-sm font-medium mb-1">You</div>
-                <div class="text-gray-100">${escapeHtml(message.content)}</div>
-                <div class="text-xs text-gray-200 mt-2 opacity-70">${formatTime(message.timestamp)}</div>
-              </div>
-            </div>
-          `;
-        } else if (message.sender === "system") {
-          messageDiv.innerHTML = `
-            <div class="flex justify-center">
-              <div class="bg-dark-600 text-gray-300 rounded-lg px-4 py-2 text-sm">
-                ${message.content}
-              </div>
-            </div>
-          `;
-        } else {
-          // Assistant message
-          let content = '';
-          
-          switch (message.type) {
-            case 'casual':
-              content = formatCasualMessage(message);
-              break;
-            case 'cod-analysis':
-              content = formatCoDAnalysis(message);
-              break;
-            case 'code':
-              content = formatCodeMessage(message, thread.codeVersions);
-              break;
-            case 'critique':
-              content = formatCritiqueMessage(message);
-              break;
-            default:
-              content = formatDefaultMessage(message);
-          }
-          
-          messageDiv.innerHTML = `
-            <div class="flex justify-start">
-              <div class="max-w-[95%] w-full">
-                ${content}
-              </div>
-            </div>
-          `;
-        }
-        
-        chatMessages.appendChild(messageDiv);
-      });
-      
-      chatMessages.scrollTop = chatMessages.scrollHeight;
+        if (!thread) return;
+        thread.messages.forEach(msg => {
+            if (msg.sender === 'user') {
+                renderUserMessage(msg.content);
+            } else {
+                appendAssistantMessage(msg.content, msg);
+            }
+        });
     }
 
-    function formatCasualMessage(message) {
-      return `
-        <div class="bg-dark-600 rounded-lg p-4 shadow-lg">
-          <div class="flex items-center gap-2 mb-2">
-            <div class="w-6 h-6 bg-deepseek-500 rounded-full flex items-center justify-center">
+    function showProgressBar() { progressContainer.classList.remove('hidden'); updateProgress(0); }
+    function hideProgressBar() { setTimeout(() => progressContainer.classList.add('hidden'), 500); }
+    function updateProgress(percent) { progressBar.style.width = `${percent}%`; }
+
+    function showNotification(message, type = 'success') {
+      const notification = document.getElementById('statusNotification');
+      notification.textContent = message;
+      notification.className = `fixed bottom-4 right-4 text-white py-2 px-4 rounded-lg shadow-lg opacity-0 transition-opacity duration-300 z-50 ${type === 'error' ? 'bg-red-500' : 'bg-dark-600'}`;
+      notification.style.opacity = '1';
+      setTimeout(() => { notification.style.opacity = '0'; }, 3000);
+    }
+
+    function escapeHtml(text) { const div = document.createElement('div'); div.textContent = text; return div.innerHTML; }
+    function formatTime(date) { return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }); }
+    function formatTimeAgo(timestamp) {
+        const diffMs = new Date() - new Date(timestamp);
+        const diffMins = Math.floor(diffMs / 60000);
+        if (diffMins < 1) return 'Just now';
+        if (diffMins < 60) return `${diffMins}m ago`;
+        const diffHours = Math.floor(diffMins / 60);
+        if (diffHours < 24) return `${diffHours}h ago`;
+        return `${Math.floor(diffHours / 24)}d ago`;
+    }
+
+    /***********************
+     * Event Listeners & Initialization
+     ***********************/
+    function initEventListeners() {
+        sendBtn.addEventListener("click", () => {
+            const message = userInput.value.trim();
+            if (message && !isGenerating) {
+                processWithRCI(message);
+                userInput.value = '';
+                userInput.style.height = 'auto';
+            }
+        });
+        userInput.addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendBtn.click(); } });
+        userInput.addEventListener('input', () => { userInput.style.height = 'auto'; userInput.style.height = (userInput.scrollHeight) + 'px'; });
+        
+        document.getElementById("newThreadBtn").addEventListener("click", createNewThread);
+        document.getElementById("clearThreadBtn").addEventListener("click", () => {
+            if (confirm("Clear all messages in this session?")) {
+                const thread = threads.find(t => t.id === currentThreadId);
+                if (thread) {
+                    thread.messages = [];
+                    thread.codeBlocks = [];
+                    chatMessages.innerHTML = "";
+                    showNotification("Session cleared");
+                }
+            }
+        });
+
+        // Settings Modal Listeners
+        document.getElementById("openSettings").addEventListener("click", openSettingsModal);
+        document.getElementById("closeSettings").addEventListener("click", closeSettingsModal);
+        document.getElementById("closeModalX").addEventListener("click", closeSettingsModal);
+        document.getElementById("saveSettings").addEventListener("click", saveSettings);
+    }
+    
+    document.addEventListener("DOMContentLoaded", () => {
+      const savedConfig = localStorage.getItem("rciConfig");
+      if (savedConfig) Object.assign(CONFIG, JSON.parse(savedConfig));
+      
+      initEventListeners();
+      setupTabNavigation();
+      setupSliders();
+      createNewThread();
+    });
+  </script>
+</body>
+</html>
