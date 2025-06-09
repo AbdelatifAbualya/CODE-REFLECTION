@@ -1,33 +1,11 @@
 {
   "version": 2,
-  "name": "rci-engine-simplified",
   "builds": [
-    { 
-      "src": "index.html", 
-      "use": "@vercel/static" 
-    },
-    { 
-      "src": "api/chat.js", 
-      "use": "@vercel/node" 
-    }
+    { "src": "index.html", "use": "@vercel/static" },
+    { "src": "api/chat.js", "use": "@vercel/node" }
   ],
   "routes": [
-    { 
-      "src": "/api/chat", 
-      "dest": "/api/chat.js",
-      "methods": ["POST", "OPTIONS"]
-    },
-    { 
-      "src": "/(.*)", 
-      "dest": "/index.html" 
-    }
-  ],
-  "env": {
-    "FIREWORKS_API_KEY": "@fireworks-api-key"
-  },
-  "functions": {
-    "api/chat.js": {
-      "maxDuration": 30
-    }
-  }
+    { "src": "/api/chat", "dest": "/api/chat.js" },
+    { "src": "/(.*)", "dest": "/index.html" }
+  ]
 }
