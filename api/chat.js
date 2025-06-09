@@ -36,11 +36,11 @@ export default async function handler(req, res) {
   try {
     const { 
       messages, 
-      temperature = 0.1,
-      top_p = 0.9, 
+      temperature = 0.6,
+      top_p = 1, 
       top_k = 40, 
-      max_tokens = 16384, 
-      stream = true, // Force streaming for a better UX
+      max_tokens = 4096, 
+      stream = true,
       model = "deepseek" 
     } = req.body;
 
@@ -50,7 +50,6 @@ export default async function handler(req, res) {
     }
 
     // Get API configuration based on model
-    let apiConfig;
     const fireworksKey = process.env.FIREWORKS_API_KEY;
     
     if (!fireworksKey) {
@@ -61,27 +60,22 @@ export default async function handler(req, res) {
       });
     }
 
+    let modelName;
     if (model === "qwen") {
-      // Correctly use Qwen3 30B-A3B for validation and critique
-      apiConfig = {
-        url: 'https://api.fireworks.ai/inference/v1/chat/completions',
-        headers: {
-          'Authorization': `Bearer ${fireworksKey}`,
-          'Content-Type': 'application/json'
-        },
-        model: "accounts/fireworks/models/qwen3-30b-a3b"
-      };
+      modelName = "accounts/fireworks/models/qwen3-30b-a3b";
     } else {
-      // Default to DeepSeek for analysis and code generation
-      apiConfig = {
-        url: 'https://api.fireworks.ai/inference/v1/chat/completions',
-        headers: {
-          'Authorization': `Bearer ${fireworksKey}`,
-          'Content-Type': 'application/json'
-        },
-        model: "accounts/fireworks/models/deepseek-coder-33b-instruct" // Using the powerful 33B Coder model
-      };
+      modelName = "accounts/fireworks/models/deepseek-v3-0324";
     }
+
+    const apiConfig = {
+      url: 'https://api.fireworks.ai/inference/v1/chat/completions',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${fireworksKey}`
+      },
+      model: modelName
+    };
 
     // Log the model being used
     console.log(`Using model: ${apiConfig.model} for ${model} request (Stream: ${stream})`);
@@ -93,7 +87,7 @@ export default async function handler(req, res) {
       body: JSON.stringify({
         model: apiConfig.model,
         messages,
-        temperature: Math.min(temperature, 1.0),
+        temperature: Math.min(temperature, 2.0),
         top_p,
         top_k,
         max_tokens,
@@ -129,17 +123,21 @@ export default async function handler(req, res) {
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
 
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        
-        const chunk = decoder.decode(value);
-        res.write(chunk);
+      try {
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          
+          const chunk = decoder.decode(value, { stream: true });
+          res.write(chunk);
+        }
+      } catch (error) {
+        console.error('Streaming error:', error);
+      } finally {
+        res.end();
       }
-
-      res.end();
     } else {
-      // This part will likely not be used if stream is forced true, but is kept for completeness
+      // Handle non-streaming response
       const data = await response.json();
       console.log(`Successfully processed ${model} request (non-stream)`);
       return res.status(200).json(data);
