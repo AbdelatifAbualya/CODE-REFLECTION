@@ -1,14 +1,16 @@
 {
-  "name": "rci-engine-dual-model",
+  "name": "rci-engine-simplified",
   "version": "2.0.0",
-  "description": "RCI Engine - DeepSeek V3 & Qwen3 Dual Model Intelligence System",
+  "description": "RCI Engine - Simplified DeepSeek V3 & Qwen3 Dual Model Coding Assistant",
   "private": true,
   "type": "module",
   "scripts": {
     "dev": "vercel dev",
-    "build": "echo 'No build step required for static site'",
+    "build": "echo 'Static site - no build required'",
     "start": "vercel dev",
-    "deploy": "vercel deploy --prod"
+    "deploy": "vercel deploy --prod",
+    "lint": "echo 'No linting configured'",
+    "test": "echo 'No tests configured'"
   },
   "dependencies": {
     "dotenv": "^16.5.0"
@@ -21,19 +23,20 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/yourusername/rci-engine-dual-model.git"
+    "url": "git+https://github.com/yourusername/rci-engine-simplified.git"
   },
   "keywords": [
     "ai",
     "rci",
-    "reflexive-code-intelligence",
-    "deepseek",
-    "qwen",
+    "coding-assistant",
+    "deepseek-v3",
+    "qwen3",
     "dual-model",
     "fireworks-ai",
-    "coding-assistant",
-    "chain-of-draft"
+    "javascript",
+    "vercel"
   ],
-  "author": "",
-  "license": "MIT"
+  "author": "Your Name",
+  "license": "MIT",
+  "homepage": "https://github.com/yourusername/rci-engine-simplified#readme"
 }
