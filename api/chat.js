@@ -25,15 +25,24 @@ module.exports = async (req, res) => {
       });
     }
 
+    // --- ROBUSTNESS CHECK: Ensure request body exists ---
+    if (!req.body) {
+        console.error('Request body is missing.');
+        return res.status(400).json({ 
+            error: 'Bad request',
+            message: 'Request body is missing or malformed.' 
+        });
+    }
+
     // Extract the request body
     const { model, messages, temperature, top_p, top_k, max_tokens, presence_penalty, frequency_penalty, stream, tools, tool_choice } = req.body;
 
-    // Validate required fields
-    if (!model || !messages) {
-      console.error('Missing required fields in request:', { model: !!model, messages: !!messages });
+    // --- ROBUSTNESS CHECK: Validate required fields ---
+    if (!model || !messages || !Array.isArray(messages) || messages.length === 0) {
+      console.error('Missing or invalid required fields in request:', { model: !!model, messages: !!messages, isArray: Array.isArray(messages), length: messages ? messages.length : 0 });
       return res.status(400).json({ 
         error: 'Bad request',
-        message: 'Missing required fields: model and messages' 
+        message: 'Missing or invalid required fields: "model" (string) and "messages" (non-empty array) are required.' 
       });
     }
 
@@ -87,16 +96,12 @@ module.exports = async (req, res) => {
         const errorText = await response.text();
         console.error('Fireworks API Error (Streaming):', response.status, errorText);
         
-        // Handle specific DeepSeek-V3-0324 errors
         let errorMessage = errorText;
-        if (response.status === 429) {
-          errorMessage = 'Rate limit exceeded. DeepSeek-V3-0324 has usage limits.';
-        } else if (response.status === 401) {
-          errorMessage = 'Invalid API key or insufficient permissions for DeepSeek-V3-0324.';
-        } else if (response.status === 400) {
-          errorMessage = 'Invalid request format for DeepSeek-V3-0324. Check parameters.';
-        }
-        
+        try {
+          const parsedError = JSON.parse(errorText);
+          errorMessage = parsedError.fault?.faultstring || parsedError.message || errorText;
+        } catch(e) { /* Ignore if not JSON */ }
+
         return res.status(response.status).json({ 
           error: 'API request failed',
           message: errorMessage 
@@ -107,31 +112,23 @@ module.exports = async (req, res) => {
       res.setHeader('Content-Type', 'text/event-stream');
       res.setHeader('Cache-Control', 'no-cache');
       res.setHeader('Connection', 'keep-alive');
-      res.setHeader('Access-Control-Allow-Origin', '*');
-      res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-      res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-
+      
       if (!response.body) {
         return res.status(500).json({ error: 'No response body from DeepSeek-V3-0324 API' });
       }
 
-      // Handle streaming with proper async iteration
+      // Pipe the stream from Fireworks to the client
       const reader = response.body.getReader();
-      const decoder = new TextDecoder();
-
       try {
         while (true) {
           const { done, value } = await reader.read();
           if (done) break;
-          
-          const chunk = decoder.decode(value, { stream: true });
-          res.write(chunk);
+          res.write(value);
         }
         res.end();
       } catch (error) {
         console.error('Streaming error with DeepSeek-V3-0324:', error);
-        res.write(`data: {"error": "Streaming interrupted"}\n\n`);
-        res.end();
+        res.status(500).end('Streaming interrupted');
       }
 
     } else {
@@ -142,21 +139,15 @@ module.exports = async (req, res) => {
         body: JSON.stringify(fireworksPayload)
       });
 
+      const responseBody = await response.text();
       if (!response.ok) {
-        const errorText = await response.text();
-        console.error('Fireworks API Error (Non-streaming):', response.status, errorText);
+        console.error('Fireworks API Error (Non-streaming):', response.status, responseBody);
         
-        // Handle specific DeepSeek-V3-0324 errors
-        let errorMessage = errorText;
-        if (response.status === 429) {
-          errorMessage = 'Rate limit exceeded. DeepSeek-V3-0324 has usage limits.';
-        } else if (response.status === 401) {
-          errorMessage = 'Invalid API key or insufficient permissions for DeepSeek-V3-0324.';
-        } else if (response.status === 400) {
-          errorMessage = 'Invalid request format for DeepSeek-V3-0324. Check parameters.';
-        } else if (response.status === 503) {
-          errorMessage = 'DeepSeek-V3-0324 service temporarily unavailable. Try again later.';
-        }
+        let errorMessage = responseBody;
+        try {
+          const parsedError = JSON.parse(responseBody);
+          errorMessage = parsedError.fault?.faultstring || parsedError.message || responseBody;
+        } catch (e) { /* Ignore if not JSON */ }
         
         return res.status(response.status).json({ 
           error: 'API request failed',
@@ -164,34 +155,21 @@ module.exports = async (req, res) => {
         });
       }
 
-      const data = await response.json();
+      const data = JSON.parse(responseBody);
       
-      // Log DeepSeek-V3-0324 usage stats
       if (data.usage) {
-        console.log('DeepSeek-V3-0324 Usage:', {
-          prompt_tokens: data.usage.prompt_tokens,
-          completion_tokens: data.usage.completion_tokens,
-          total_tokens: data.usage.total_tokens
-        });
+        console.log('DeepSeek-V3-0324 Usage:', data.usage);
       }
       
       return res.status(200).json(data);
     }
 
   } catch (error) {
-    console.error('Server error with DeepSeek-V3-0324:', error);
-    
-    // Enhanced error handling for DeepSeek-V3-0324
-    let errorMessage = error.message;
-    if (error.message.includes('fetch')) {
-      errorMessage = 'Network error connecting to DeepSeek-V3-0324. Check your internet connection.';
-    } else if (error.message.includes('timeout')) {
-      errorMessage = 'Request timeout with DeepSeek-V3-0324. The model may be processing a complex request.';
-    }
+    console.error('Unhandled server error:', error);
     
     return res.status(500).json({ 
       error: 'Internal server error',
-      message: errorMessage 
+      message: error.message 
     });
   }
 };
