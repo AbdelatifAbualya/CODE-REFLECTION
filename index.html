@@ -11,6 +11,9 @@
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   
+  <!-- Marked.js for Markdown parsing -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  
   <!-- Highlight.js for code highlighting -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/github-dark.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
@@ -82,11 +85,58 @@
       animation: pulse 2s infinite;
     }
     
-    /* Code highlighting */
+    /* Code highlighting enhancements */
     .hljs {
       background: #0d1117 !important;
       padding: 1.5rem !important;
       border-radius: 0.5rem !important;
+      margin: 1rem 0 !important;
+    }
+
+    /* Message styling */
+    .message-content {
+      max-width: none !important;
+    }
+
+    .message-content pre {
+      overflow-x: auto;
+      margin: 1rem 0;
+    }
+
+    .message-content code {
+      background: #374151;
+      padding: 0.25rem 0.5rem;
+      border-radius: 0.25rem;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .message-content pre code {
+      background: transparent;
+      padding: 0;
+    }
+
+    /* Stage indicators */
+    .stage-header {
+      background: linear-gradient(135deg, rgba(86, 134, 245, 0.1) 0%, rgba(14, 165, 233, 0.1) 100%);
+      border: 1px solid rgba(86, 134, 245, 0.3);
+      border-radius: 0.5rem;
+      padding: 0.75rem;
+      margin-bottom: 1rem;
+    }
+
+    .stage-deepseek {
+      background: linear-gradient(135deg, rgba(14, 165, 233, 0.1) 0%, rgba(59, 130, 246, 0.1) 100%);
+      border-color: rgba(14, 165, 233, 0.3);
+    }
+
+    .stage-qwen {
+      background: linear-gradient(135deg, rgba(147, 51, 234, 0.1) 0%, rgba(236, 72, 153, 0.1) 100%);
+      border-color: rgba(147, 51, 234, 0.3);
+    }
+
+    .stage-final {
+      background: linear-gradient(135deg, rgba(34, 197, 94, 0.1) 0%, rgba(59, 130, 246, 0.1) 100%);
+      border-color: rgba(34, 197, 94, 0.3);
     }
   </style>
 </head>
@@ -123,7 +173,7 @@
           <div class="bg-gradient-to-r from-deepseek-900/20 to-blue-900/20 border border-deepseek-500/30 rounded-lg p-3">
             <div class="flex items-center justify-between mb-2">
               <div class="flex items-center gap-2">
-                <div class="w-2 h-2 bg-deepseek-400 rounded-full animate-pulse"></div>
+                <div id="deepseekIndicator" class="w-2 h-2 bg-gray-400 rounded-full"></div>
                 <span class="text-deepseek-300 text-sm font-medium">DeepSeek V3</span>
                 <span class="bg-blue-500/20 text-blue-300 text-xs px-2 py-1 rounded-full">Primary</span>
               </div>
@@ -135,12 +185,23 @@
           <div class="bg-gradient-to-r from-purple-900/20 to-pink-900/20 border border-purple-500/30 rounded-lg p-3">
             <div class="flex items-center justify-between mb-2">
               <div class="flex items-center gap-2">
-                <div class="w-2 h-2 bg-purple-400 rounded-full animate-pulse"></div>
+                <div id="qwenIndicator" class="w-2 h-2 bg-gray-400 rounded-full"></div>
                 <span class="text-purple-300 text-sm font-medium">Qwen3 30B</span>
                 <span class="bg-purple-500/20 text-purple-300 text-xs px-2 py-1 rounded-full">Critic</span>
               </div>
             </div>
             <div class="text-purple-200 text-xs">Code Review & Improvement</div>
+          </div>
+
+          <!-- RCI Status -->
+          <div class="bg-gradient-to-r from-green-900/20 to-emerald-900/20 border border-green-500/30 rounded-lg p-3">
+            <div class="flex items-center justify-between mb-2">
+              <div class="flex items-center gap-2">
+                <div id="rciIndicator" class="w-2 h-2 bg-gray-400 rounded-full"></div>
+                <span class="text-green-300 text-sm font-medium">RCI Status</span>
+              </div>
+            </div>
+            <div id="rciStatus" class="text-green-200 text-xs">Ready</div>
           </div>
         </div>
       </div>
@@ -181,7 +242,7 @@
       </header>
 
       <!-- Progress Bar -->
-      <div id="progressContainer" class="bg-gray-700 h-1 overflow-hidden hidden">
+      <div id="progressContainer" class="bg-gray-700 h-2 overflow-hidden hidden">
         <div id="progressBar" class="bg-gradient-to-r from-deepseek-500 to-primary-600 h-full w-0 transition-all duration-300"></div>
       </div>
 
@@ -232,49 +293,70 @@
       }
     };
 
-    // Simplified RCI Prompts
+    // Enhanced RCI Prompts with better structure
     const RCI_PROMPTS = {
       // Stage 1: DeepSeek Analysis & Code Generation
-      deepseekAnalysis: `You are DeepSeek V3, an expert coding assistant. Your task is to analyze the user's request and generate comprehensive, production-ready code.
+      deepseekAnalysis: `You are DeepSeek V3, an expert coding assistant. Analyze the user's request and generate comprehensive, production-ready code.
 
-INSTRUCTIONS:
-1. Analyze the requirements thoroughly
-2. Identify potential challenges and edge cases
-3. Generate complete, working code with proper structure
-4. Include error handling and best practices
-5. Add clear comments explaining complex logic
+## Your Task:
+1. **Understand Requirements**: Analyze what the user wants to build
+2. **Plan Architecture**: Design the solution structure
+3. **Generate Complete Code**: Create working, well-documented code
+4. **Add Best Practices**: Include error handling, security, and performance considerations
+
+## Output Format:
+Provide a complete implementation with:
+- Clear explanation of the approach
+- Full working code with comments
+- Usage examples
+- Setup/installation instructions
 
 Focus on creating robust, maintainable code that follows industry standards.`,
 
       // Stage 2: Qwen Code Review & Critique
-      qwenCritique: `You are Qwen3, a code review specialist. Analyze the provided code and user request to identify improvements.
+      qwenCritique: `You are Qwen3, a senior code reviewer. Analyze the provided code and identify specific improvements.
 
-INSTRUCTIONS:
-1. Review the code for bugs, security issues, and performance problems
-2. Check for missing features or incomplete implementations
-3. Identify areas where code quality can be improved
-4. Suggest better algorithms or approaches if applicable
-5. Provide specific, actionable feedback
+## Review Areas:
+1. **Bugs & Issues**: Find logical errors, edge cases, missing validation
+2. **Security**: Identify vulnerabilities, input sanitization issues
+3. **Performance**: Spot inefficiencies, bottlenecks, optimization opportunities
+4. **Code Quality**: Check structure, readability, maintainability
+5. **Missing Features**: Identify incomplete implementations
 
-Be thorough but concise in your analysis.`,
+## Output Format:
+Provide specific, actionable feedback:
+- List concrete issues found
+- Suggest specific improvements
+- Prioritize critical vs. minor issues
+- Recommend better approaches where applicable
+
+Be thorough but focus on the most impactful improvements.`,
 
       // Stage 3: Final Implementation
-      finalImplementation: `You are DeepSeek V3. Based on the critique provided, create the final, improved version of the code.
+      finalImplementation: `You are DeepSeek V3. Create the final, improved version incorporating all feedback from the code review.
 
-INSTRUCTIONS:
-1. Address all issues identified in the review
-2. Implement suggested improvements
-3. Ensure the code is complete and production-ready
-4. Maintain clean, readable structure
-5. Include comprehensive error handling
+## Your Task:
+1. **Address All Issues**: Fix every problem identified in the review
+2. **Implement Suggestions**: Apply all recommended improvements
+3. **Enhance Features**: Add any missing functionality
+4. **Optimize Performance**: Apply performance improvements
+5. **Ensure Quality**: Make code production-ready
 
-Generate the final, polished implementation.`
+## Output Format:
+Provide the complete, final implementation:
+- Full working code with all improvements
+- Clear documentation
+- Usage examples
+- Deployment instructions
+
+This should be the definitive, production-ready version.`
     };
 
     // Session Management
     let sessions = [];
     let currentSessionId = null;
     let sessionCounter = 1;
+    let currentStage = 0;
 
     class Session {
       constructor() {
@@ -283,6 +365,9 @@ Generate the final, polished implementation.`
         this.messages = [];
         this.codeBlocks = [];
         this.created = new Date().toISOString();
+        this.stage1Response = '';
+        this.stage2Response = '';
+        this.stage3Response = '';
       }
     }
 
@@ -298,14 +383,19 @@ Generate the final, polished implementation.`
       progressContainer: document.getElementById('progressContainer'),
       progressBar: document.getElementById('progressBar'),
       loadingNotification: document.getElementById('loadingNotification'),
-      loadingText: document.getElementById('loadingText')
+      loadingText: document.getElementById('loadingText'),
+      deepseekIndicator: document.getElementById('deepseekIndicator'),
+      qwenIndicator: document.getElementById('qwenIndicator'),
+      rciIndicator: document.getElementById('rciIndicator'),
+      rciStatus: document.getElementById('rciStatus')
     };
 
     // Initialize Application
     function initializeApp() {
       createNewSession();
       setupEventListeners();
-      console.log('RCI Engine initialized');
+      updateModelStatus('ready');
+      console.log('🚀 RCI Engine initialized');
     }
 
     // Event Listeners
@@ -333,9 +423,11 @@ Generate the final, polished implementation.`
       const session = new Session();
       sessions.push(session);
       currentSessionId = session.id;
+      currentStage = 0;
       updateSessionList();
       clearChat();
       showWelcomeMessage();
+      updateModelStatus('ready');
     }
 
     function updateSessionList() {
@@ -402,7 +494,8 @@ Generate the final, polished implementation.`
     async function processWithRCI(userMessage) {
       try {
         showProgress();
-        showLoading('Analyzing requirements...');
+        currentStage = 1;
+        updateModelStatus('processing');
 
         // Stage 1: DeepSeek Analysis & Code Generation
         await runStage1(userMessage);
@@ -413,65 +506,125 @@ Generate the final, polished implementation.`
         // Stage 3: Final Implementation
         await runStage3();
 
+        // Complete
+        updateModelStatus('complete');
+        showCompletionMessage();
+
       } catch (error) {
-        console.error('RCI Processing Error:', error);
-        addMessage('system', `Error: ${error.message}`, 'error');
+        console.error('❌ RCI Processing Error:', error);
+        addMessage('system', `**Error**: ${error.message}
+
+Please try again or check your API configuration.`, 'error');
+        updateModelStatus('error');
       } finally {
         hideProgress();
         hideLoading();
+        currentStage = 0;
       }
     }
 
     async function runStage1(userMessage) {
-      showLoading('DeepSeek V3 analyzing and generating code...');
-      updateProgress(25);
+      try {
+        updateModelStatus('stage1');
+        showLoading('🧠 DeepSeek V3 analyzing requirements and generating code...');
+        updateProgress(25);
 
-      const response = await callAPI(CONFIG.models.deepseek, [
-        { role: 'system', content: RCI_PROMPTS.deepseekAnalysis },
-        { role: 'user', content: userMessage }
-      ]);
+        const response = await callAPI(CONFIG.models.deepseek, [
+          { role: 'system', content: RCI_PROMPTS.deepseekAnalysis },
+          { role: 'user', content: userMessage }
+        ]);
 
-      addMessage('assistant', response, 'deepseek-analysis', 'Stage 1: DeepSeek V3 Analysis & Code Generation');
-      updateProgress(50);
+        const session = getCurrentSession();
+        session.stage1Response = response;
+
+        addMessage('assistant', response, 'deepseek-analysis', '🚀 Stage 1: DeepSeek V3 Analysis & Code Generation');
+        updateProgress(40);
+        
+        // Extract code blocks from Stage 1
+        extractCodeBlocks(response);
+        
+        console.log('✅ Stage 1 completed');
+      } catch (error) {
+        console.error('❌ Stage 1 error:', error);
+        throw new Error(`Stage 1 failed: ${error.message}`);
+      }
     }
 
     async function runStage2(userMessage) {
-      showLoading('Qwen3 reviewing code quality...');
-      
-      const session = getCurrentSession();
-      const stage1Response = session.messages[session.messages.length - 1].content;
+      try {
+        updateModelStatus('stage2');
+        showLoading('🔍 Qwen3 reviewing code quality and identifying improvements...');
+        
+        const session = getCurrentSession();
+        const stage1Response = session.stage1Response;
 
-      const response = await callAPI(CONFIG.models.qwen, [
-        { role: 'system', content: RCI_PROMPTS.qwenCritique },
-        { role: 'user', content: `ORIGINAL REQUEST:\n${userMessage}\n\nCODE TO REVIEW:\n${stage1Response}\n\nPlease provide a detailed code review with specific improvements.` }
-      ]);
+        const reviewPrompt = `**ORIGINAL REQUEST:**
+${userMessage}
 
-      addMessage('assistant', response, 'qwen-critique', 'Stage 2: Qwen3 Code Review & Critique');
-      updateProgress(75);
+**CODE TO REVIEW:**
+${stage1Response}
+
+Please provide a detailed code review with specific improvements.`;
+
+        const response = await callAPI(CONFIG.models.qwen, [
+          { role: 'system', content: RCI_PROMPTS.qwenCritique },
+          { role: 'user', content: reviewPrompt }
+        ]);
+
+        session.stage2Response = response;
+
+        addMessage('assistant', response, 'qwen-critique', '🔍 Stage 2: Qwen3 Code Review & Critique');
+        updateProgress(70);
+        
+        console.log('✅ Stage 2 completed');
+      } catch (error) {
+        console.error('❌ Stage 2 error:', error);
+        throw new Error(`Stage 2 failed: ${error.message}`);
+      }
     }
 
     async function runStage3() {
-      showLoading('Creating final implementation...');
-      
-      const session = getCurrentSession();
-      const stage1Response = session.messages[session.messages.length - 2].content;
-      const stage2Response = session.messages[session.messages.length - 1].content;
+      try {
+        updateModelStatus('stage3');
+        showLoading('⚡ Creating final optimized implementation...');
+        
+        const session = getCurrentSession();
+        const stage1Response = session.stage1Response;
+        const stage2Response = session.stage2Response;
 
-      const response = await callAPI(CONFIG.models.deepseek, [
-        { role: 'system', content: RCI_PROMPTS.finalImplementation },
-        { role: 'user', content: `ORIGINAL CODE:\n${stage1Response}\n\nCRITIQUE & IMPROVEMENTS:\n${stage2Response}\n\nGenerate the final, improved implementation.` }
-      ]);
+        const finalPrompt = `**ORIGINAL CODE:**
+${stage1Response}
 
-      addMessage('assistant', response, 'final-implementation', 'Stage 3: Final Implementation');
-      updateProgress(100);
-      
-      // Extract code blocks
-      extractCodeBlocks(response);
+**CODE REVIEW & IMPROVEMENTS:**
+${stage2Response}
+
+Generate the final, improved implementation addressing all feedback.`;
+
+        const response = await callAPI(CONFIG.models.deepseek, [
+          { role: 'system', content: RCI_PROMPTS.finalImplementation },
+          { role: 'user', content: finalPrompt }
+        ]);
+
+        session.stage3Response = response;
+
+        addMessage('assistant', response, 'final-implementation', '✨ Stage 3: Final Optimized Implementation');
+        updateProgress(100);
+        
+        // Extract code blocks from final implementation
+        extractCodeBlocks(response);
+        
+        console.log('✅ Stage 3 completed');
+      } catch (error) {
+        console.error('❌ Stage 3 error:', error);
+        throw new Error(`Stage 3 failed: ${error.message}`);
+      }
     }
 
-    // API Communication
+    // API Communication with enhanced error handling
     async function callAPI(model, messages) {
       try {
+        console.log(`🔄 Calling ${model} API...`);
+        
         const response = await fetch(CONFIG.apiEndpoint, {
           method: 'POST',
           headers: {
@@ -488,19 +641,85 @@ Generate the final, polished implementation.`
         });
 
         if (!response.ok) {
-          const error = await response.json();
-          throw new Error(error.message || 'API request failed');
+          const errorText = await response.text();
+          let errorMessage;
+          
+          try {
+            const errorData = JSON.parse(errorText);
+            errorMessage = errorData.message || errorData.error || 'API request failed';
+          } catch {
+            errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+          }
+          
+          throw new Error(errorMessage);
         }
 
         const data = await response.json();
+        
+        if (!data.choices || !data.choices[0] || !data.choices[0].message) {
+          throw new Error('Invalid API response format');
+        }
+
+        console.log(`✅ ${model} API call successful`);
         return data.choices[0].message.content;
+        
       } catch (error) {
-        console.error('API Error:', error);
+        console.error(`❌ API Error (${model}):`, error);
         throw error;
       }
     }
 
-    // UI Functions
+    // Model Status Management
+    function updateModelStatus(status) {
+      const { deepseekIndicator, qwenIndicator, rciIndicator, rciStatus } = elements;
+      
+      // Reset all indicators
+      deepseekIndicator.className = 'w-2 h-2 rounded-full';
+      qwenIndicator.className = 'w-2 h-2 rounded-full';
+      rciIndicator.className = 'w-2 h-2 rounded-full';
+      
+      switch (status) {
+        case 'ready':
+          deepseekIndicator.classList.add('bg-gray-400');
+          qwenIndicator.classList.add('bg-gray-400');
+          rciIndicator.classList.add('bg-green-400');
+          rciStatus.textContent = 'Ready';
+          break;
+        case 'processing':
+        case 'stage1':
+          deepseekIndicator.classList.add('bg-deepseek-400', 'animate-pulse');
+          qwenIndicator.classList.add('bg-gray-400');
+          rciIndicator.classList.add('bg-yellow-400', 'animate-pulse');
+          rciStatus.textContent = 'Stage 1: Analysis';
+          break;
+        case 'stage2':
+          deepseekIndicator.classList.add('bg-deepseek-400');
+          qwenIndicator.classList.add('bg-purple-400', 'animate-pulse');
+          rciIndicator.classList.add('bg-yellow-400', 'animate-pulse');
+          rciStatus.textContent = 'Stage 2: Review';
+          break;
+        case 'stage3':
+          deepseekIndicator.classList.add('bg-deepseek-400', 'animate-pulse');
+          qwenIndicator.classList.add('bg-purple-400');
+          rciIndicator.classList.add('bg-yellow-400', 'animate-pulse');
+          rciStatus.textContent = 'Stage 3: Final';
+          break;
+        case 'complete':
+          deepseekIndicator.classList.add('bg-green-400');
+          qwenIndicator.classList.add('bg-green-400');
+          rciIndicator.classList.add('bg-green-400');
+          rciStatus.textContent = 'Complete';
+          break;
+        case 'error':
+          deepseekIndicator.classList.add('bg-red-400');
+          qwenIndicator.classList.add('bg-red-400');
+          rciIndicator.classList.add('bg-red-400');
+          rciStatus.textContent = 'Error';
+          break;
+      }
+    }
+
+    // UI Functions with enhanced message rendering
     function addMessage(sender, content, type = 'default', stageInfo = '') {
       const session = getCurrentSession();
       if (!session) return;
@@ -530,33 +749,57 @@ Generate the final, polished implementation.`
           </div>
         `;
       } else {
-        const stageColor = getStageColor(message.type);
+        const stageClass = getStageClass(message.type);
+        const stageIcon = getStageIcon(message.type);
+        
         messageDiv.innerHTML = `
-          <div class="max-w-4xl">
+          <div class="max-w-6xl w-full">
             ${message.stageInfo ? `
-              <div class="text-xs text-gray-400 mb-2 flex items-center gap-2">
-                <div class="w-2 h-2 ${stageColor} rounded-full"></div>
-                ${message.stageInfo}
+              <div class="stage-header ${stageClass} mb-4">
+                <div class="flex items-center gap-3">
+                  <div class="text-lg">${stageIcon}</div>
+                  <div>
+                    <div class="font-semibold text-white">${message.stageInfo}</div>
+                    <div class="text-xs text-gray-300 mt-1">${formatTimestamp(message.timestamp)}</div>
+                  </div>
+                </div>
               </div>
             ` : ''}
-            <div class="bg-gray-800 rounded-lg p-4 border-l-4 ${getBorderColor(message.type)}">
-              <div class="prose prose-invert max-w-none">${formatMessage(message.content)}</div>
+            <div class="bg-gray-800 rounded-lg p-6 border-l-4 ${getBorderColor(message.type)}">
+              <div class="message-content prose prose-invert max-w-none">${formatMessage(message.content)}</div>
             </div>
           </div>
         `;
       }
       
       elements.chatMessages.appendChild(messageDiv);
+      
+      // Highlight code blocks after rendering
+      setTimeout(() => {
+        messageDiv.querySelectorAll('pre code').forEach((block) => {
+          hljs.highlightElement(block);
+        });
+      }, 100);
     }
 
-    function getStageColor(type) {
-      const colors = {
-        'deepseek-analysis': 'bg-deepseek-400',
-        'qwen-critique': 'bg-purple-400',
-        'final-implementation': 'bg-green-400',
-        'error': 'bg-red-400'
+    function getStageClass(type) {
+      const classes = {
+        'deepseek-analysis': 'stage-deepseek',
+        'qwen-critique': 'stage-qwen',
+        'final-implementation': 'stage-final',
+        'error': 'stage-error'
       };
-      return colors[type] || 'bg-gray-400';
+      return classes[type] || '';
+    }
+
+    function getStageIcon(type) {
+      const icons = {
+        'deepseek-analysis': '🚀',
+        'qwen-critique': '🔍',
+        'final-implementation': '✨',
+        'error': '❌'
+      };
+      return icons[type] || '💬';
     }
 
     function getBorderColor(type) {
@@ -570,18 +813,27 @@ Generate the final, polished implementation.`
     }
 
     function formatMessage(content) {
-      // Convert markdown-style code blocks to HTML
-      content = content.replace(/```(\w+)?\n([\s\S]*?)```/g, (match, lang, code) => {
-        return `<pre><code class="language-${lang || 'text'}">${escapeHtml(code.trim())}</code></pre>`;
-      });
-      
-      // Convert inline code
-      content = content.replace(/`([^`]+)`/g, '<code class="bg-gray-700 px-1 py-0.5 rounded text-sm">$1</code>');
-      
-      // Convert line breaks
-      content = content.replace(/\n/g, '<br>');
-      
-      return content;
+      // Enhanced markdown processing
+      try {
+        // Configure marked with better options
+        marked.setOptions({
+          highlight: function(code, lang) {
+            if (lang && hljs.getLanguage(lang)) {
+              try {
+                return hljs.highlight(code, { language: lang }).value;
+              } catch (err) {}
+            }
+            return hljs.highlightAuto(code).value;
+          },
+          breaks: true,
+          gfm: true
+        });
+        
+        return marked.parse(content);
+      } catch (error) {
+        console.error('Markdown parsing error:', error);
+        return escapeHtml(content).replace(/\n/g, '<br>');
+      }
     }
 
     function extractCodeBlocks(content) {
@@ -634,8 +886,27 @@ Generate the final, polished implementation.`
           </div>
           <h3 class="text-lg font-medium text-gray-300 mb-2">Ready to Code</h3>
           <p class="text-gray-400">Describe your coding project and let our dual-model system create it for you.</p>
+          <div class="mt-6 text-sm text-gray-500">
+            <p><strong>How it works:</strong></p>
+            <p>🚀 DeepSeek V3 analyzes & generates initial code</p>
+            <p>🔍 Qwen3 reviews & identifies improvements</p>
+            <p>✨ Final optimized implementation delivered</p>
+          </div>
         </div>
       `;
+    }
+
+    function showCompletionMessage() {
+      setTimeout(() => {
+        addMessage('system', `🎉 **RCI Process Complete!**
+
+All three stages have been executed successfully:
+- ✅ Stage 1: Requirements analysis and initial code generation
+- ✅ Stage 2: Comprehensive code review and improvement identification  
+- ✅ Stage 3: Final optimized implementation
+
+Your code is ready for use! Check the export section to download the complete implementation.`, 'success');
+      }, 1000);
     }
 
     function scrollToBottom() {
@@ -651,7 +922,7 @@ Generate the final, polished implementation.`
     function hideProgress() {
       setTimeout(() => {
         elements.progressContainer.classList.add('hidden');
-      }, 1000);
+      }, 2000);
     }
 
     function updateProgress(percent) {
@@ -679,19 +950,39 @@ Generate the final, polished implementation.`
         return;
       }
 
-      let content = `# ${session.name} - Generated Code\n`;
-      content += `Generated: ${new Date().toLocaleString()}\n\n`;
+      let content = `# ${session.name} - RCI Generated Code\n`;
+      content += `Generated: ${new Date().toLocaleString()}\n`;
+      content += `RCI Engine: DeepSeek V3 + Qwen3 Dual Model System\n\n`;
       content += `${'='.repeat(60)}\n\n`;
       
-      session.codeBlocks.forEach((block, index) => {
-        if (index > 0) content += '\n\n' + '='.repeat(60) + '\n\n';
-        content += `## Code Block ${index + 1} (${block.language})\n\n`;
-        content += '```' + block.language + '\n';
-        content += block.code;
-        content += '\n```\n';
-      });
+      // Add all stages
+      if (session.stage1Response) {
+        content += `## Stage 1: DeepSeek V3 Analysis & Initial Code\n\n${session.stage1Response}\n\n`;
+        content += `${'='.repeat(60)}\n\n`;
+      }
       
-      downloadFile(content, `${session.name.replace(/\s+/g, '_')}_code.md`, 'text/markdown');
+      if (session.stage2Response) {
+        content += `## Stage 2: Qwen3 Code Review & Critique\n\n${session.stage2Response}\n\n`;
+        content += `${'='.repeat(60)}\n\n`;
+      }
+      
+      if (session.stage3Response) {
+        content += `## Stage 3: Final Optimized Implementation\n\n${session.stage3Response}\n\n`;
+        content += `${'='.repeat(60)}\n\n`;
+      }
+      
+      // Add extracted code blocks
+      if (session.codeBlocks.length > 0) {
+        content += `## Extracted Code Blocks\n\n`;
+        session.codeBlocks.forEach((block, index) => {
+          content += `### Code Block ${index + 1} (${block.language})\n\n`;
+          content += '```' + block.language + '\n';
+          content += block.code;
+          content += '\n```\n\n';
+        });
+      }
+      
+      downloadFile(content, `${session.name.replace(/\s+/g, '_')}_RCI_Complete.md`, 'text/markdown');
     }
 
     function downloadFile(content, filename, type) {
@@ -732,14 +1023,22 @@ Generate the final, polished implementation.`
       return `${diffDays}d ago`;
     }
 
+    function formatTimestamp(timestamp) {
+      return new Date(timestamp).toLocaleTimeString();
+    }
+
     // Initialize when DOM is loaded
     document.addEventListener('DOMContentLoaded', initializeApp);
+    
+    // Enhanced error handling for the entire application
+    window.addEventListener('error', (event) => {
+      console.error('Global error:', event.error);
+      updateModelStatus('error');
+    });
 
-    // Highlight code blocks after they're added
-    document.addEventListener('DOMNodeInserted', function(e) {
-      if (e.target.tagName === 'CODE') {
-        hljs.highlightElement(e.target);
-      }
+    window.addEventListener('unhandledrejection', (event) => {
+      console.error('Unhandled promise rejection:', event.reason);
+      updateModelStatus('error');
     });
   </script>
 </body>
