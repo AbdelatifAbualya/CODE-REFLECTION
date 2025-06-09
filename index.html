@@ -1568,14 +1568,6 @@ This iteration should significantly improve upon the previous version.`
       });
     }
     
-    function updateRangeColor(slider) {
-      const min = parseFloat(slider.min) || 0;
-      const max = parseFloat(slider.max) || 1;
-      const value = parseFloat(slider.value) || 0;
-      const percent = ((value - min) / (max - min)) * 100;
-      slider.style.setProperty('--value-percent', `${percent}%`);
-    }
-
     function openSettingsModal() {
       // Set analysis depth
       const depthRadio = document.getElementById(`${CONFIG.analysisDepth}Analysis`);
@@ -2417,12 +2409,12 @@ Please provide final consensus and validation.`;
       const openSettings = document.getElementById('openSettings');
       const closeSettings = document.getElementById('closeSettings');
       const closeModalX = document.getElementById('closeModalX');
-      const saveSettings = document.getElementById('saveSettings');
+      const saveSettingsBtn = document.getElementById('saveSettings');
       
       if (openSettings) openSettings.addEventListener('click', openSettingsModal);
       if (closeSettings) closeSettings.addEventListener('click', closeSettingsModal);
       if (closeModalX) closeModalX.addEventListener('click', closeSettingsModal);
-      if (saveSettings) saveSettings.addEventListener('click', saveSettings);
+      if (saveSettingsBtn) saveSettingsBtn.addEventListener('click', saveSettings);
       
       // Thread management
       const newThreadBtn = document.getElementById('newThreadBtn');
@@ -2440,17 +2432,17 @@ Please provide final consensus and validation.`;
       });
       
       // Input handling
-      const inputMessage = document.getElementById('inputMessage');
+      const userInput = document.getElementById('userInput');
       const sendBtn = document.getElementById('sendBtn');
       
-      if (inputMessage) {
-        inputMessage.addEventListener('keydown', (e) => {
+      if (userInput) {
+        userInput.addEventListener('keydown', (e) => {
           if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
-            const message = inputMessage.value.trim();
+            const message = userInput.value.trim();
             if (message) {
               sendCodingMessage(message);
-              inputMessage.value = '';
+              userInput.value = '';
             }
           }
         });
@@ -2458,10 +2450,10 @@ Please provide final consensus and validation.`;
       
       if (sendBtn) {
         sendBtn.addEventListener('click', () => {
-          const message = inputMessage?.value.trim();
+          const message = userInput?.value.trim();
           if (message) {
             sendCodingMessage(message);
-            if (inputMessage) inputMessage.value = '';
+            if (userInput) userInput.value = '';
           }
         });
       }
