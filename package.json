@@ -1,17 +1,32 @@
-{
-  "name": "cod-studio-3",
-  "version": "42.2.0",
-  "description": "AI Reasoning Studio with Chain of Draft methodology",
-  "main": "index.html",
+package_json_content = '''{
+  "name": "mcp-on-vercel",
+  "version": "1.0.0",
+  "description": "MCP-enabled chatbot with Vercel deployment",
+  "main": "index.js",
+  "type": "module",
   "scripts": {
     "dev": "vercel dev",
-    "build": "echo 'No build step needed for static site'",
-    "deploy": "vercel --prod"
+    "build": "tsc",
+    "start": "node api/server.js",
+    "test": "echo \\"Error: no test specified\\" && exit 1"
   },
-  "keywords": ["ai", "reasoning", "chain-of-draft", "fireworks"],
+  "keywords": ["mcp", "chatbot", "vercel", "ai"],
   "author": "",
-  "license": "MIT",
+  "license": "ISC",
+  "packageManager": "pnpm@9.4.0",
+  "dependencies": {
+    "@vercel/mcp-adapter": "^0.4.1",
+    "zod": "^3.24.2",
+    "node-fetch": "^3.3.2"
+  },
   "devDependencies": {
-    "vercel": "^33.0.0"
+    "@types/node": "^22.13.10",
+    "typescript": "^5.0.0",
+    "@vercel/node": "^3.0.0"
   }
-}
+}'''
+
+with open('package.json', 'w') as f:
+    f.write(package_json_content)
+
+print("Created updated package.json with required dependencies")
